@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+
+export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
+
+MONITOR_PREFIX="Monitor-"
+HIPPO_DIR=${PROJECT_HOME}/hippo
+HIPPO_BIN_DIR=${HIPPO_DIR}/bin
+HIPPO_SBIN_DIR=${HIPPO_DIR}/sbin
+HIPPO_CONF_DIR=${HIPPO_DIR}/etc
+HIPPO_LOG_DIR=${HIPPO_DIR}/var/logs
+
+. "${HIPPO_CONF_DIR}/env.conf"
+. "${HIPPO_BIN_DIR}/runtime-env-info.sh"
+
+while read assignment; do
+  if [[ $assignment != *"#"* ]] ; then
+    if [ ! -z "$assignment" -a "$assignment" != " " ]; then
+      export "$assignment"
+    fi
+  fi
+
+
+done < ${HIPPO_CONF_DIR}/env.conf
+
+
+function usage ()
+{
+    temp_serivce_name="$(basename ${PROJECT_HOME})"
+    echo "[monirot-stop]
+    Usage: `basename $0` SERVICE
+    e.g. `basename $0` "$temp_serivce_name"
+    "
+}
+
+args=`getopt -o h --long help -n 'monitor-stop' -- "$@"`
+
+if [ $? != 0 ] ; then
+  echo "terminating..." >&2 ;
+  exit 1 ;
+fi
+
+eval set -- "$args"
+
+
+while true ; do
+  case "$1" in
+    -h|--help )
+      usage
+      exit
+      ;;
+    --)
+      shift ;
+      break ;;
+    *)
+      echo "internal error!" ;
+      exit 1 ;;
+  esac
+done
+
+for arg do
+   SERVICE_NAME=$arg
+done
+
+# check for required args
+if [[ -z $SERVICE_NAME ]] ; then
+  echo "$(basename $0): missing SERVICE"
+  usage
+  exit 1
+fi
+MONITOR="${MONITOR_PREFIX}${SERVICE_NAME}"
+
+function stop() {
+  monitor_retout=$(stop_monitor)
+  monitor_retcode=$?
+  service_retout=$(stop_service)
+  service_retcode=$?
+
+  if [[ $monitor_retcode == 0 && $service_retcode == 0 ]]; then
+    RETVAL=0
+  elif [[ $monitor_retcode == 2 && $service_retcode == 2 ]]; then
+    RETVAL=2
+  elif [[ $monitor_retcode == 2 && $service_retcode == 0 ]]; then
+    RETVAL=2
+  elif [[ $monitor_retcode == 0 && $service_retcode == 2 ]]; then
+    RETVAL=2
+  else
+    RETVAL=1
+  fi
+
+  if [[ $RETVAL == 0 ]]; then
+    echo $monitor_retout
+    echo $service_retout
+  else
+    >&2 echo $monitor_retout
+    >&2 echo $service_retout
+  fi
+
+  exit $RETVAL
+
+}
+
+function stop_monitor() {
+  sh ${HIPPO_SBIN_DIR}/daemon.sh $MONITOR stop 1
+}
+
+function stop_service() {
+  sh ${HIPPO_SBIN_DIR}/daemon.sh $SERVICE_NAME stop 1
+}
+
+stop
