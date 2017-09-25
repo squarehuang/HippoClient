@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+
+export APP_HOME="$(cd "`dirname "$0"`"; pwd)"
+. ${APP_HOME}/etc/runtime-env-info.sh
+
+nowcmd=`basename $0`
+usage(){
+    for i in ${APP_HOME}/app/*.py; do
+        filename=${i##*/}
+        [ ! -L "$i" -a -f "$i"  ] && echo "$nowcmd ${filename%.*}"
+    done
+
+    [ "${COMMAND}" == "help" ] && exit 0 || exit 1
+}
+
+COMMAND=$1; shift;
+
+[ ! -f ${APP_HOME}/app/${COMMAND}.py ] && usage
+
+python ${APP_HOME}/app/${COMMAND}.py "$@"
+
+
