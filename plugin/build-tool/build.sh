@@ -206,7 +206,7 @@ if [[ -z $BUILD_ACCOUNT ]] ; then
 fi
 
 if [[ -z $BUILD_SERVER ]] ; then
-    BUILD_SERVER=$HOSTNAME
+    BUILD_SERVER=localhost
 fi
 
 # call function

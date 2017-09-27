@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import print_function
 import json
 import traceback
 
 import requests
-from base_app import BaseApp
+from utils.base_app import BaseApp
 
 
 class HttpService(BaseApp, object):
@@ -49,7 +51,7 @@ class HttpService(BaseApp, object):
         return self._api_base
 
     def _resolve_api_url(self, api_postfix):
-        return 'https://{0}{1}{2}'.format(self._api_host, self._api_base, api_postfix)
+        return 'http://{0}{1}{2}'.format(self._api_host, self._api_base, api_postfix)
 
     def request_get(self, url, headers=None, data=None):
         return self._request(url, method='get', headers=headers, data=data)
@@ -69,9 +71,9 @@ class HttpService(BaseApp, object):
             response = requests.post(
                 url, headers=headers, data=json.dumps(data))
         try:
-            return json.loads(response.text)
+            return response.status_code, json.loads(response.text)
         except ValueError as e:
             print('{} error: Illegal response ({}) from server'.format(
                 str(e.message), response.content))
-            self._logger.error(
+            self.logger.error(
                 '{} error: Illegal response ({}) from server'.format(traceback.extract_stack(), response.content))

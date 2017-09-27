@@ -19,7 +19,7 @@ class BaseApp(object):
 
 
 def get_logger(level=logging.INFO):
-    logger = logging.getLogger('Coordinate Restful API')
+    logger = logging.getLogger('Hippo CLI')
     logger.setLevel(level)
     if not len(logger.handlers):
         ch = logging.StreamHandler()
