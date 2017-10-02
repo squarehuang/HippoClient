@@ -2,12 +2,13 @@
 
 from __future__ import print_function
 import os
+import socket
 from controller.register_cmd import RegisterCommand
 import click
 
 
 @click.command()
-@click.option('--host', default='localhost', help='Server host, Default: localhost')
+@click.option('--host', default=socket.gethostname(), help='Server host, Default: {}'.format(socket.gethostname()))
 @click.option('-p', '--project_home', required=True)
 @click.option('-s', '--service_name', help='Service name')
 @click.option('-c', '--run_cmd', help='command for run service')

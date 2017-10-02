@@ -51,7 +51,7 @@ class RegisterCommand(Command):
                 host=host, path=project_home, serviceName=service_name)
             is_success, resp = self.hippoServingService.register_service(
                 register_request)
-
+            print(resp)
             if not is_success:
                 raise Exception(resp.get('message'))
             msg = ['{0} : {1}'.format(k, v) for k, v in resp.items()]

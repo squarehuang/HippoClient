@@ -30,16 +30,47 @@ class RegisterRequest(dict):
 
 
 class RegisterResponse(dict):
-    def __init__(self, hippo_id):
-        assert hippo_id
+    def __init__(self, id):
+        assert id
         super(RegisterResponse, self).__init__({
-            'hippo_id': hippo_id
+            'id': id
 
         })
 
     @classmethod
     def from_dict(cls, dict_obj):
-        return cls(dict_obj['hippo_id'])
+        return cls(dict_obj['id'])
+
+
+class StartRequest(dict):
+    def __init__(self, id=None, interval=None):
+        assert id
+        super(StartRequest, self).__init__({
+            'id': id,
+            'interval': interval
+        })
+
+    def to_simple(self):
+        ret = {}
+        if self.get('interval'):
+            ret['interval'] = self.get('interval')
+        return ret
+
+    @classmethod
+    def from_dict(cls, dict_obj):
+        return cls(dict_obj.get('interval'))
+
+
+class StopRequest(dict):
+    def __init__(self, id=None):
+        assert id
+        super(StopRequest, self).__init__({
+            'id': id
+        })
+
+    def to_simple(self):
+        ret = {}
+        return ret
 
 
 class HippoError(dict):
@@ -57,69 +88,43 @@ class HippoInstance(dict):
     """ Structure for a HippoInstance.
 
     Fields:
-        hippo_id (str)
-        host (str)
-        serviceName (str)
-        path (str)
+        id (str)
         pid (str)
+        interval (int)
+        lastUpdateTime (string)
         state (str)
-        checkInterval (int)
-        created (str)
-        updated (str)
+        config (dict)
+            host (str)        
+            serviceName (str)
+            path (str)
+            execTime (str)
     """
 
-    def __init__(self, hippo_id=None, host=None, serviceName=None, path=None,
-                 pid=None, checkInterval=None, state=None, created=None, updated=None, creator=None):
+    def __init__(self, id=None, pid=None, interval=None, lastUpdateTime=None, state=None, host=None, serviceName=None, path=None, execTime=None):
         super(HippoInstance, self).__init__({
-            'hippo_id': hippo_id,
-            'host': host,
-            'serviceName': serviceName,
-            'path': path,
+            'id': id,
             'pid': pid,
-            'checkInterval': checkInterval,
+            'interval': interval,
+            'lastUpdateTime': lastUpdateTime,
             'state': state,
-            'created': created,
-            'updated': updated,
-            'creator': creator
+            'config': {
+                'host': host,
+                'serviceName': serviceName,
+                'path': path,
+                'execTime': execTime
+            }
         })
-
-    def to_simple(self):
-        ret = {}
-        if self.get('hippo_id'):
-            ret['hippo_id'] = self.get('hippo_id')
-        if self.get('host'):
-            ret['host'] = self.get('host')
-        if self.get('hippo_id'):
-            ret['hippo_id'] = self.get('hippo_id')
-        if self.get('serviceName'):
-            ret['serviceName'] = self.get('serviceName')
-        if self.get('path'):
-            ret['path'] = self.get('path')
-        if self.get('pid'):
-            ret['pid'] = self.get('pid')
-        if self.get('checkInterval'):
-            ret['checkInterval'] = self.get('checkInterval')
-        if self.get('state'):
-            ret['state'] = self.get('state')
-        if self.get('created'):
-            ret['created'] = self.get('created')
-        if self.get('state'):
-            ret['updated'] = self.get('updated')
-        if self.get('creator'):
-            ret['creator'] = self.get('creator')
-        return ret
 
     @classmethod
     def from_dict(cls, dict_obj):
         assert dict_obj
-        return cls(dict_obj.get('hippo_id'), dict_obj.get('host'), dict_obj.get('serviceName'),
-                   dict_obj.get('path'), dict_obj.get(
-                       'pid'), dict_obj.get(
-                       'checkInterval'), dict_obj.get(
+        return cls(dict_obj.get('id'), dict_obj.get('pid'), dict_obj.get('interval'),
+                   dict_obj.get('lastUpdateTime'), dict_obj.get(
                        'state'), dict_obj.get(
-                       'created'), dict_obj.get(
-                       'updated'), dict_obj.get(
-                       'creator'))
+                       'config').get('host'), dict_obj.get(
+                       'config').get('serviceName'), dict_obj.get(
+                       'config').get('path'), dict_obj.get(
+                       'config').get('execTime'))
 
 
 class HippoInstanceCollection(dict):
@@ -160,16 +165,55 @@ class HippoServingService(HttpService):
             serviceName
             path
         Return:
-            hippo_id
+            id
         """
         assert register_res and isinstance(register_res, RegisterRequest)
         rtn_code, resp = self.request_post(
             '/services', data=register_res.to_simple())
-        self.logger.debug('rtn_code: {}'.format(rtn_code))
-        self.logger.debug('resp: {}'.format(resp))
+        self.logger.warn('rtn_code: {}'.format(rtn_code))
+        self.logger.warn('resp: {}'.format(resp))
 
         if rtn_code == 200 or 201:
             return True, RegisterResponse.from_dict(resp)
+        else:
+            return False, HippoError.from_dict(resp)
+
+    def start_service(self, start_res):
+        """ Start a Service.
+        Arguments:
+            id
+        Return:
+            HippoInstance
+        """
+        assert start_res
+        hippo_id = start_res['id'] if isinstance(
+            start_res, StartRequest) else start_res
+        rtn_code, resp = self.request_post(
+            '/services/instances/{0}/start'.format(hippo_id), data=start_res.to_simple())
+        self.logger.debug('rtn_code: {}'.format(rtn_code))
+        self.logger.debug('resp: {}'.format(resp))
+
+        if rtn_code == 200:
+            return True, HippoInstance.from_dict(resp)
+        else:
+            return False, HippoError.from_dict(resp)
+
+    def stop_service(self, stop_res):
+        """ Stop a Service.
+        Arguments:
+            id
+        Return:
+            HippoInstance
+        """
+        assert stop_res
+        hippo_id = stop_res['id'] if isinstance(
+            stop_res, StopRequest) else stop_res
+        rtn_code, resp = self.request_post(
+            '/services/instances/{0}/stop'.format(hippo_id), data=stop_res.to_simple())
+        self.logger.debug('rtn_code: {}'.format(rtn_code))
+        self.logger.debug('resp: {}'.format(resp))
+        if rtn_code == 200:
+            return True, HippoInstance.from_dict(resp)
         else:
             return False, HippoError.from_dict(resp)
 

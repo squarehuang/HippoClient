@@ -11,4 +11,4 @@
 # language version, like Python, JDK, R, Scala
 
 source /Users/square_huang/ENV/bin/activate
-export PYTHONPATH=${PYTHONPATH}:${APP_HOME}/app
+export PYTHONPATH=${PYTHONPATH}:${APP_HOME}/cli/app
