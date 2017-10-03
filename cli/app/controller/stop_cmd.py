@@ -6,8 +6,10 @@ from collections import OrderedDict
 import datetime
 import json
 from base_command import Command
-from client_service.hippo_serving_service import HippoServingService, StopRequest, HippoInstance
-from entity.response.hippo_status import HippoStatus
+from client_service.hippo_serving_service import HippoServingService
+from entity.column_enum import HippoColumn
+from entity.request_entity import HippoInstanceRequest
+from entity.response_entity import HippoInstance
 
 
 class StopCommand(Command):
@@ -22,38 +24,15 @@ class StopCommand(Command):
         hippo_id = self.verify_args(**kwargs)
         try:
             # call http
-            request_entity = StopRequest(hippo_id)
+            request_entity = HippoInstanceRequest(id=hippo_id)
             is_success, resp = self.hippoServingService.stop_service(
                 request_entity)
 
             if not is_success:
                 raise Exception(resp.get('message'))
             output_dict = self.refactor_result(resp)
-            output_dict = self.output(output_dict, HippoStatus)
+            self.output(output_dict)
 
         except Exception as e:
             print('Stop {} service failed'.format(hippo_id))
             print(e.message)
-
-    def refactor_result(self, resp):
-        '''
-            exectime : timestamp to YYYY-MM-DD HH:mm:ss
-            lastupdatetime : timestamp to YYYY-MM-DD HH:mm:ss
-            interval : ms to sec 
-        '''
-        output_dict = {}
-        for k, v in resp.items():
-            if k == HippoStatus.CONFIG.value:
-                for conf_k, conf_v in v.items():
-                    if conf_k == HippoStatus.EXECTIME.value:
-                        conf_v = datetime.datetime.fromtimestamp(
-                            conf_v / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
-                    output_dict.setdefault(conf_k, conf_v)
-            else:
-                if k == HippoStatus.LASTUPDATETIME.value:
-                    v = datetime.datetime.fromtimestamp(
-                        v / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
-                elif k == HippoStatus.INTERVAL.value:
-                    v = v / 1000
-                output_dict.setdefault(k, v)
-        return output_dict
