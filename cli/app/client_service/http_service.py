@@ -59,6 +59,9 @@ class HttpService(BaseApp, object):
     def request_post(self, url, headers=None, data=None):
         return self._request(url, method='post', headers=headers, data=data)
 
+    def request_delete(self, url, headers=None):
+        return self._request(url, method='delete', headers=headers)
+
     def _request(self, api, method='get', headers=None, data=None):
         url = self._resolve_api_url(api)
 
@@ -70,6 +73,9 @@ class HttpService(BaseApp, object):
         elif method == 'post':
             response = requests.post(
                 url, headers=headers, data=json.dumps(data))
+        elif method == 'delete':
+            response = requests.delete(
+                url, headers=headers)
         try:
             return response.status_code, json.loads(response.text)
         except ValueError as e:
