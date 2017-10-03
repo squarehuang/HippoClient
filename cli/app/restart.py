@@ -1,18 +1,13 @@
 import click
+from controller.restart_cmd import RestartCommand
 
 
 @click.command()
-@click.option('-h', '--host', default='localhost', help='Server host, Default: localhost')
-@click.option('-s', '--service_name', help='Service name')
-@click.option('--instance_id', help='')
-@click.option('-i', '--interval', help='')
-def restart(host, service_name, instance_id, interval):
-    print("start...")
-    print("host : {}".format(host))
-    print("service_name : {}".format(service_name))
-    print("instance_id : {}".format(instance_id))
-    print("interval : {}".format(interval))
-    pass
+@click.option('--hippo_id', help='')
+@click.option('-i', '--interval', type=int, help='sec')
+def restart(hippo_id, interval):
+    cmd = RestartCommand()
+    cmd.execute(hippo_id=hippo_id, interval=interval)
 
 
 if __name__ == '__main__':
