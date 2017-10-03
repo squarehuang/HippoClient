@@ -2,13 +2,12 @@
 
 from __future__ import print_function
 import os
+import traceback
+import socket
 from base_command import Command
 from client_service.hippo_build_service import HippoBuildService
-from client_service.hippo_serving_service import HippoServingService, RegisterRequest
-
-
-# step1. call build.sh (check create service | create service)
-# step2. call coordinate (register)
+from client_service.hippo_serving_service import HippoServingService
+from entity.request_entity import HippoInstanceRequest
 
 
 class RegisterCommand(Command):
@@ -21,7 +20,9 @@ class RegisterCommand(Command):
         service_name = kwargs.get('service_name')
         host = kwargs.get('host')
         run_cmd = kwargs.get('run_cmd', None)
-
+        if host is None:
+            host = socket.gethostname()
+            print('host => {}'.format(host))
         if service_name is None:
             service_name = os.path.basename(project_home)
         return project_home, service_name, host, run_cmd
@@ -47,16 +48,15 @@ class RegisterCommand(Command):
                     double_check_service.stderr))
 
             # call http
-            register_request = RegisterRequest(
+            register_request = HippoInstanceRequest(
                 host=host, path=project_home, serviceName=service_name)
             is_success, resp = self.hippoServingService.register_service(
                 register_request)
-            print(resp)
             if not is_success:
                 raise Exception(resp.get('message'))
-            msg = ['{0} : {1}'.format(k, v) for k, v in resp.items()]
-            print('\n'.join(msg))
+            self.output(resp)
 
         except Exception as e:
             print('Register {} service failed'.format(service_name))
             print(e.message)
+            traceback.print_exc()

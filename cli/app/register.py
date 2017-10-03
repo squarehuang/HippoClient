@@ -8,7 +8,7 @@ import click
 
 
 @click.command()
-@click.option('--host', default=socket.gethostname(), help='Server host, Default: {}'.format(socket.gethostname()))
+@click.option('--host', help='Server host, Default: {}'.format(socket.gethostname()))
 @click.option('-p', '--project_home', required=True)
 @click.option('-s', '--service_name', help='Service name')
 @click.option('-c', '--run_cmd', help='command for run service')
