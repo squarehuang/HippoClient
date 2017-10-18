@@ -15,7 +15,7 @@ class HippoBuildService(ShellService):
         '''
         cwd = os.path.dirname(os.path.realpath(__file__))
         app_home = os.path.sep.join(cwd.split(os.path.sep)[:-3])
-        paths = [app_home, 'plugin', 'build-tool']
+        paths = [app_home, 'build-tool']
         self.path_prefix = os.path.join(*paths)
 
     def _merge_options(self, *args, **kwargs):

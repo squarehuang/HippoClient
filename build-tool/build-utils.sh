@@ -42,15 +42,24 @@ function stat_permission (){
         stat -f %Lp $1
     fi
 }
-
+# TODO serving | ml_pipeline | streaming 
+function gen_template_path () {
+    service_type=$1
+    if [[ $service_type == "basic" ]]; then
+        export template_path=${HIPPO_HOME}/plugin-templates/basic
+    fi
+}
 
 function install_plugin_func (){
+  service_type=$1
+  shift
+  gen_template_path $service_type
   # TODO check permission
   # clone hippo folder to target project
   $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER mkdir -p ${PROJECT_HOME}/hippo
   $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER chmod -R 755 ${PROJECT_HOME}/hippo
 
-  rsync -avz --exclude 'service' --exclude 'build-tool' ${HIPPO_HOME}/build-tool/.template/* $BUILD_ACCOUNT@$BUILD_SERVER:${PROJECT_HOME}/hippo/
+  rsync -avz --exclude 'service' ${template_path}/* $BUILD_ACCOUNT@$BUILD_SERVER:${PROJECT_HOME}/hippo/
   $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER [[ -d "${PROJECT_HOME}/hippo" ]] ; cp_issuccess=$?
   $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER chmod -R 755 ${PROJECT_HOME}/hippo
   if [[ $cp_issuccess -ne 0 ]] ; then
@@ -86,6 +95,8 @@ function check_exists_plugin_func (){
 }
 
 function create_service_func (){
+    service_type=$1
+    shift
     service_name=$1
     shift
     cmd=$1
@@ -123,7 +134,7 @@ function create_service_func (){
     # folder path and filename pattern  : hippo/bin/${service_name}/run-${service_name}.conf
     $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER mkdir -p "${PROJECT_HOME}/hippo/bin/${service_name}"
     log_info "[BUILD] create folder : $BUILD_SERVER:${PROJECT_HOME}/hippo/bin/${service_name}"
-    rsync -az "${HIPPO_HOME}/build-tool/.template/bin/service/run-template.sh" $BUILD_ACCOUNT@$BUILD_SERVER:${PROJECT_HOME}/hippo/bin/${service_name}/run-${service_name}.sh
+    rsync -az "${template_path}/bin/service/run-template.sh" $BUILD_ACCOUNT@$BUILD_SERVER:${PROJECT_HOME}/hippo/bin/${service_name}/run-${service_name}.sh
     # add service name into run script
     $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER $sed_command "s/^SERVICE_NAME=.*/SERVICE_NAME=\\\"${service_name}\\\"/" "${PROJECT_HOME}/hippo/bin/${service_name}/run-${service_name}.sh"
     $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER chmod 755 "${PROJECT_HOME}/hippo/bin/${service_name}/run-${service_name}.sh"
@@ -133,7 +144,7 @@ function create_service_func (){
     # folder path and filename pattern  : hippo/etc/${service_name}/${service_name}-env.conf
     $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER mkdir -p "${PROJECT_HOME}/hippo/etc/${service_name}"
     log_info "[BUILD] create folder : $BUILD_SERVER:${PROJECT_HOME}/hippo/etc/${service_name}"
-    rsync -az "${HIPPO_HOME}/build-tool/.template/etc/service/template-env.conf" $BUILD_ACCOUNT@$BUILD_SERVER:${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf
+    rsync -az "${template_path}/etc/service/template-env.conf" $BUILD_ACCOUNT@$BUILD_SERVER:${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf
     $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER chmod 755 "${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
 
     if [[ -n $cmd ]] ; then

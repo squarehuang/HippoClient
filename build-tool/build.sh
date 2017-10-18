@@ -1,8 +1,5 @@
 # !/usr/bin/env bash
 export HIPPO_HOME="$(cd "`dirname "$0"`"/..; pwd)"
-export HIPPO_BIN_DIR=${HIPPO_HOME}/bin
-export HIPPO_CONF_DIR=${HIPPO_HOME}/etc
-
 . "${HIPPO_HOME}"/build-tool/build-utils.sh
 
 example_path="$(cd "`dirname "$HIPPO_HOME"`"/..; pwd)"/test_project
@@ -154,7 +151,7 @@ function install(){
       exit
     fi
     log_info " Install Plugin on $PROJECT_HOME"
-    install_plugin_func $PROJECT_HOME
+    install_plugin_func "basic"
 }
 
 function uninstall(){
@@ -162,7 +159,7 @@ function uninstall(){
     retval_is_install=$?
     if [[ $retval_is_install == 0 ]] ; then
       log_info " Uninstall Plugin on $PROJECT_HOME"
-      uninstall_plugin_func $PROJECT_HOME
+      uninstall_plugin_func
     fi
 
 
@@ -176,9 +173,9 @@ function create_service(){
     fi
 
     if [[ -n $CMD ]] ; then
-      create_service_func $SERVICE_NAME "$CMD"
+      create_service_func "basic" $SERVICE_NAME "$CMD"
     else
-      create_service_func $SERVICE_NAME
+      create_service_func "basic" $SERVICE_NAME
     fi
 }
 function delete_service(){
