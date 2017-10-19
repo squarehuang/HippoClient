@@ -6,8 +6,10 @@ import socket
 from controller.register_cmd import RegisterCommand
 import click
 
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
-@click.command()
+
+@click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--host', help='Server host, Default: {}'.format(socket.gethostname()))
 @click.option('-p', '--project_home', required=True)
 @click.option('-s', '--service_name', help='Service name')

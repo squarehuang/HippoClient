@@ -2,7 +2,10 @@ import click
 from controller.stop_cmd import StopCommand
 
 
-@click.command()
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+
+@click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--hippo_id', help='')
 def stop(hippo_id):
     cmd = StopCommand()

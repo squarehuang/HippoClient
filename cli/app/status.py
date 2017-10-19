@@ -2,8 +2,11 @@ import click
 from controller.status_cmd import StatusCommand
 
 
-@click.command()
-@click.option('-h', '--host', default='localhost', help='Server host, Default: localhost')
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.option('--host', default='localhost', help='Server host, Default: localhost')
 @click.option('-s', '--service_name', help='Service name')
 @click.option('--hippo_id', help='')
 @click.option('-a', '--all_mode', is_flag=True, help='Get cluster status')

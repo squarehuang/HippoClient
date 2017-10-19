@@ -6,7 +6,10 @@ import click
 from controller.remove_cmd import RemoveCommand
 
 
-@click.command()
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+
+@click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--hippo_id', help='')
 @click.option('-f', '--force', is_flag=True, help='')
 @click.option('-d', '--del_service', is_flag=True, help='Delete service plugin from project')

@@ -2,7 +2,10 @@ import click
 from controller.restart_cmd import RestartCommand
 
 
-@click.command()
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+
+@click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--hippo_id', help='')
 @click.option('-i', '--interval', type=int, help='sec')
 def restart(hippo_id, interval):
