@@ -4,6 +4,7 @@ from __future__ import print_function
 import traceback
 import json
 import datetime
+
 from base_command import Command
 from client_service.hippo_serving_service import HippoServingService
 from entity.column_enum import HippoColumn, HippoNodeColumn
@@ -11,12 +12,14 @@ from entity.request_entity import HippoInstanceRequest
 from entity.response_entity import HippoInstance
 
 
-class StatusCommand(Command):
-    def __init__(self):
-        self.hippoServingService = HippoServingService()
+class StatusCommand(Command, object):
+    def __init__(self, api_url):
+        super(StatusCommand, self).__init__()
+        self.hippoServingService = HippoServingService(api_url)
 
     def verify_args(self, **kwargs):
         hippo_id = kwargs.get('hippo_id')
+
         return hippo_id
 
     def execute(self, **kwargs):
@@ -34,9 +37,9 @@ class StatusCommand(Command):
             self.output(output_dict)
 
         except Exception as e:
-            print('Get {} service status failed'.format(hippo_id))
-            print(e.message)
-            traceback.print_exc()
+            self.logger.error('Get {} service status failed'.format(hippo_id))
+            self.logger.error(e.message)
+            self.logger.debug(traceback.format_exc())
 
     def execute_node(self, **kwargs):
         hippo_id = self.verify_args(**kwargs)
@@ -50,12 +53,11 @@ class StatusCommand(Command):
             output_dict = self.refactor_node_result(resp)
             oeder_dict = self.output(output_dict)
         except Exception as e:
-            print('Get Node status failed')
-            print(e.message)
-            traceback.print_exc()
+            self.logger.error('Get Node status failed')
+            self.logger.error(e.message)
+            self.logger.debug(traceback.format_exc())
 
     def execute_cluster(self, **kwargs):
-        hippo_id = self.verify_args(**kwargs)
         try:
             # call http
             is_success, resp = self.hippoServingService.get_cluster_status()
@@ -66,9 +68,9 @@ class StatusCommand(Command):
             output_dict = self.refactor_cluster_result(resp)
             oeder_dict = self.output(output_dict)
         except Exception as e:
-            print('Get Node status failed')
-            print(e.message)
-            traceback.print_exc()
+            self.logger.error('Get Node status failed')
+            self.logger.error(e.message)
+            self.logger.debug(traceback.format_exc())
 
     def refactor_cluster_result(self, resp):
         node_list = []

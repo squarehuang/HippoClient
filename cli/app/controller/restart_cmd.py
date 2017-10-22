@@ -2,21 +2,25 @@
 
 from __future__ import print_function
 import traceback
+
 from controller.base_command import Command
 from client_service.hippo_serving_service import HippoServingService
 from entity.request_entity import HippoInstanceRequest
 
 
 class RestartCommand(Command):
-    def __init__(self):
-        self.hippoServingService = HippoServingService()
+    def __init__(self, api_url):
+        super(RestartCommand, self).__init__()
+        self.hippoServingService = HippoServingService(api_url)
 
     def verify_args(self, **kwargs):
         hippo_id = kwargs.get('hippo_id')
         interval = kwargs.get('interval')
+
         # sec => ms
         if interval != None:
             interval = interval * 1000
+
         return hippo_id, interval
 
     def execute(self, **kwargs):
@@ -34,6 +38,6 @@ class RestartCommand(Command):
             self.output(output_dict)
 
         except Exception as e:
-            print('Start {} service failed'.format(hippo_id))
-            print(e.message)
-            traceback.print_exc()
+            self.logger.error('Start {} service failed'.format(hippo_id))
+            self.logger.error(e.message)
+            self.logger.debug(traceback.format_exc)

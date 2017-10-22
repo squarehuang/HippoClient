@@ -13,8 +13,9 @@ from entity.column_enum import HippoColumn
 
 
 class RemoveCommand(Command):
-    def __init__(self):
-        self.hippoServingService = HippoServingService()
+    def __init__(self, api_url):
+        super(RemoveCommand, self).__init__()
+        self.hippoServingService = HippoServingService(api_url)
 
     def verify_args(self, **kwargs):
         hippo_id = kwargs.get('hippo_id')
@@ -47,9 +48,9 @@ class RemoveCommand(Command):
             if del_service:
                 self._execute(status_resp)
         except Exception as e:
-            print('Remove {} service failed'.format(hippo_id))
-            print(e.message)
-            traceback.print_exc()
+            self.logger.error('Remove {} service failed'.format(hippo_id))
+            self.logger.error(e.message)
+            self.logger.debug(traceback.format_exc)
 
     def _execute(self, status_resp):
         # 1. get project_home, service name by hippo http

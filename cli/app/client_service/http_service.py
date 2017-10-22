@@ -68,18 +68,20 @@ class HttpService(BaseApp, object):
         self.logger.debug('connect to {}'.format(url))
         if headers == None:
             headers = self.__common_headers.copy()
-        if method == 'get':
-            response = requests.get(url, headers=headers, params=data)
-        elif method == 'post':
-            response = requests.post(
-                url, headers=headers, data=json.dumps(data))
-        elif method == 'delete':
-            response = requests.delete(
-                url, headers=headers)
         try:
+            if method == 'get':
+                response = requests.get(url, headers=headers, params=data)
+            elif method == 'post':
+                response = requests.post(
+                    url, headers=headers, data=json.dumps(data))
+            elif method == 'delete':
+                response = requests.delete(
+                    url, headers=headers)
             return response.status_code, json.loads(response.text)
         except ValueError as e:
             print('{} error: Illegal response ({}) from server'.format(
                 str(e.message), response.content))
             self.logger.error(
                 '{} error: Illegal response ({}) from server'.format(traceback.extract_stack(), response.content))
+        except Exception as e:
+            raise Exception('connect to {} failed'.format(url))

@@ -4,6 +4,8 @@ from __future__ import print_function
 import os
 import traceback
 import socket
+
+
 from base_command import Command
 from client_service.hippo_build_service import HippoBuildService
 from client_service.hippo_serving_service import HippoServingService
@@ -11,24 +13,27 @@ from entity.request_entity import HippoInstanceRequest
 
 
 class RegisterCommand(Command):
-    def __init__(self):
+    def __init__(self, api_url):
+        super(RegisterCommand, self).__init__()
         self.hippoBuildService = HippoBuildService()
-        self.hippoServingService = HippoServingService()
+        self.hippoServingService = HippoServingService(api_url)
 
     def verify_args(self, **kwargs):
         project_home = kwargs.get('project_home')
         service_name = kwargs.get('service_name')
         host = kwargs.get('host')
+
         run_cmd = kwargs.get('run_cmd', None)
         if host is None:
             host = socket.gethostname()
-            print('host => {}'.format(host))
         if service_name is None:
             service_name = os.path.basename(project_home)
+
         return project_home, service_name, host, run_cmd
 
     def execute(self, **kwargs):
-        project_home, service_name, host, run_cmd = self.verify_args(**kwargs)
+        project_home, service_name, host, run_cmd = self.verify_args(
+            **kwargs)
         try:
             check_service = self.hippoBuildService.check_service(
                 service_name=service_name, project_home=project_home, build_server=host)
@@ -57,6 +62,7 @@ class RegisterCommand(Command):
             self.output(resp)
 
         except Exception as e:
-            print('Register {} service failed'.format(service_name))
-            print(e.message)
-            traceback.print_exc()
+            self.logger.debug(
+                'Register {} service failed'.format(service_name))
+            self.logger.debug(e.message)
+            self.logger.debug(traceback.format_exc)

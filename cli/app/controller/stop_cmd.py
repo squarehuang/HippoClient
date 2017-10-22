@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 import os
+import traceback
 from collections import OrderedDict
 import datetime
 import json
@@ -13,11 +14,13 @@ from entity.response_entity import HippoInstance
 
 
 class StopCommand(Command):
-    def __init__(self):
-        self.hippoServingService = HippoServingService()
+    def __init__(self, api_host):
+        super(StopCommand, self).__init__()
+        self.hippoServingService = HippoServingService(api_host)
 
     def verify_args(self, **kwargs):
         hippo_id = kwargs.get('hippo_id')
+
         return hippo_id
 
     def execute(self, **kwargs):
@@ -34,5 +37,6 @@ class StopCommand(Command):
             self.output(output_dict)
 
         except Exception as e:
-            print('Stop {} service failed'.format(hippo_id))
-            print(e.message)
+            self.logger.error('Stop {} service failed'.format(hippo_id))
+            self.logger.error(e.message)
+            self.logger.debug(traceback.format_exc)

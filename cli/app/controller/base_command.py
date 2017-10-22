@@ -5,7 +5,10 @@ from utils.base_app import BaseApp
 from entity.column_enum import HippoColumn
 
 
-class Command(BaseApp):
+class Command(BaseApp, object):
+    def __init__(self):
+        super(Command, self).__init__()
+
     def execute(self):
         pass
 
