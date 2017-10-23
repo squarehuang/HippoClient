@@ -40,10 +40,12 @@ class RegisterCommand(Command):
 
             # 若 Project 未裝 plugin ，則先進行安裝
             if check_service.status != 0:
-                self.hippoBuildService.create_service(
+                create_service = self.hippoBuildService.create_service(
                     service_name=service_name, project_home=project_home, build_server=host, cmd=run_cmd)
                 print("Install {0} Hippo Plugin to {1}:{2} ".format(
                     service_name, host, project_home))
+                self.logger.info('==== create service ====')
+                self.logger.info(create_service.stdout)
 
             double_check_service = self.hippoBuildService.check_service(
                 service_name=service_name, project_home=project_home, build_server=host)

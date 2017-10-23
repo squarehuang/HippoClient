@@ -101,6 +101,7 @@ function create_service_func (){
     shift
     cmd=$1
     ENV_PATH="${PROJECT_HOME}/hippo/etc/env.conf"
+    gen_template_path $service_type
     eval $($ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER cat ${PROJECT_HOME}/hippo/etc/env.conf)
     ## read service_name
     if [[ $SERVICE_LIST =~ $service_name ]]; then
@@ -139,12 +140,12 @@ function create_service_func (){
     $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER $sed_command "s/^SERVICE_NAME=.*/SERVICE_NAME=\\\"${service_name}\\\"/" "${PROJECT_HOME}/hippo/bin/${service_name}/run-${service_name}.sh"
     $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER chmod 755 "${PROJECT_HOME}/hippo/bin/${service_name}/run-${service_name}.sh"
 
-
     # generate service folder and env file
     # folder path and filename pattern  : hippo/etc/${service_name}/${service_name}-env.conf
     $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER mkdir -p "${PROJECT_HOME}/hippo/etc/${service_name}"
     log_info "[BUILD] create folder : $BUILD_SERVER:${PROJECT_HOME}/hippo/etc/${service_name}"
     rsync -az "${template_path}/etc/service/template-env.conf" $BUILD_ACCOUNT@$BUILD_SERVER:${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf
+    
     $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER chmod 755 "${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
 
     if [[ -n $cmd ]] ; then
