@@ -14,7 +14,7 @@ HIPPO_LOG_DIR=${HIPPO_DIR}/var/logs
 
 
 . "${HIPPO_CONF_DIR}/env.conf"
-. "${HIPPO_BIN_DIR}/runtime-env-info.sh"
+. "${HIPPO_CONF_DIR}/runtime-env-info.sh"
 . "${HIPPO_CONF_DIR}/${SERVICE_NAME}/${SERVICE_NAME}-env.conf"
 
 while read assignment; do
