@@ -33,14 +33,15 @@ function usage ()
     Usage: `basename $0` [OPTIONS] SERVICE
     e.g. `basename $0` -i 60 "$temp_serivce_name"
     OPTIONS:
-       -h|--help                  Show this message
-       -i|--interval=interval     Monitor interval seconds,required
-       -r|--restart               Restart monitor, (default: false)
+       -h|--help                      Show this message
+       -i|--interval=interval         Monitor interval seconds,required
+       -r|--restart                   Restart monitor, (default: false)
+       -c|--coordAdress=coordAdress   Coordinate Address
     "
 }
 
 
-args=`getopt -o rhi: --long interval:,restart,help \
+args=`getopt -o rhi:c: --long interval:,restart,coordAdress:,help \
      -n 'monitor-run' -- "$@"`
 
 if [ $? != 0 ] ; then
@@ -57,6 +58,10 @@ while true ; do
                       ;;
                 -i|--interval)
                      INTERVAL="$2";
+                     shift 2
+                     ;;
+                -c|--coordAdress)
+                     COORD_ADRESS="$2";
                      shift 2
                      ;;
                 -h|--help )
@@ -101,7 +106,7 @@ fi
 function start() {
   service_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --start)
   service_retcode=$?
-  cmd="sh ${HIPPO_SBIN_DIR}/monitor.sh -i $INTERVAL $SERVICE_NAME"
+  cmd="sh ${HIPPO_SBIN_DIR}/monitor.sh -i $INTERVAL -c $COORD_ADRESS $SERVICE_NAME "
   monitor_retout=$(${HIPPO_SBIN_DIR}/daemon.sh $MONITOR start 1 $cmd)
   monitor_retcode=$?
   if [[ $monitor_retcode == 0 && $service_retcode == 0 ]]; then

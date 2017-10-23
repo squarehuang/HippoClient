@@ -12,14 +12,16 @@ HIPPO_CONF_DIR=${HIPPO_DIR}/etc
 function usage ()
 {
     echo "[monitor]
-    Usage: `basename $0` -t <interval> SERVICE_NAME
+    Usage: `basename $0` -i <interval> SERVICE_NAME
     OPTIONS:
-       -h|--help                  Show this message
-       -i|--interval <interval>   Monitor interval seconds, (default: 5)
+       -h|--help                        Show this message
+       -i|--interval <interval>         Monitor interval seconds, (default: 5)
+       -c|--coordAdress <coordAdress>   Coordinate Address
+
     "
 }
 
-args=`getopt -o hi: --long interval:,help \
+args=`getopt -o hi:c: --long interval:coordAdress:,help \
      -n 'monitor' -- "$@"`
 
 if [ $? != 0 ] ; then
@@ -33,6 +35,10 @@ while true; do
   case $1 in
     -i|--interval)
       INTERVAL=$2
+      shift 2
+      ;;
+    -c|--coordAdress)
+      COORD_ADRESS=$2
       shift 2
       ;;
     -h|--help)
@@ -65,6 +71,8 @@ log_info "INTERVAL is $INTERVAL"
 err_cnt=1
 is_success=0
 
+INTERVAL_SEC=$INTERVAL/1000
+echo "$INTERVAL_SEC"
 while [[ True ]]; do
   sleep $INTERVAL
   error_msg=''
@@ -99,7 +107,8 @@ while [[ True ]]; do
   path=$PROJECT_HOME
   exec_time=`date +%s`
   exec_timems=$((exec_time*1000+`date "+%N"`/1000000))
-  message="{\"host\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":$own_pid,\"service_pid\":$service_pid,\"exec_time\":$exec_timems,\"is_success\":$is_success,\"error_msg\":\"$error_msg\"}"
+
+  message="{\"host\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":$own_pid,\"service_pid\":$service_pid,\"exec_time\":$exec_timems,\"is_success\":$is_success,\"error_msg\":\"$error_msg\",\"coordAdress\":\"$COORD_ADRESS\",\"interval\":$INTERVAL_SEC}"
   producer_cmd="$KAFKA_PRODUCER --broker-list ${KAFKA_HOST} --topic ${HEALTH_TOPIC}"
   #echo ${message} "|" ${producer_cmd}
 
