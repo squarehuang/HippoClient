@@ -99,7 +99,7 @@ while [[ True ]]; do
   path=$PROJECT_HOME
   exec_time=`date +%s`
   exec_timems=$((exec_time*1000+`date "+%N"`/1000000))
-  message="{\"host\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":\"$own_pid\",\"service_pid\":\"$service_pid\",\"exec_time\":\"$exec_timems\",\"is_success\":\"$is_success\",\"error_msg\":\"$error_msg\"}"
+  message="{\"host\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":$own_pid,\"service_pid\":$service_pid,\"exec_time\":$exec_timems,\"is_success\":$is_success,\"error_msg\":\"$error_msg\"}"
   producer_cmd="$KAFKA_PRODUCER --broker-list ${KAFKA_HOST} --topic ${HEALTH_TOPIC}"
   #echo ${message} "|" ${producer_cmd}
 
