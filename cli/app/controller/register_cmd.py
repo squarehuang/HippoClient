@@ -51,18 +51,18 @@ class RegisterCommand(Command):
             if double_check_service.status != 0:
                 raise Exception("Service plugin not found : {}".format(
                     double_check_service.stderr))
-
             # call http
             register_request = HippoInstanceRequest(
                 host=host, path=project_home, serviceName=service_name)
             is_success, resp = self.hippoServingService.register_service(
                 register_request)
+
             if not is_success:
                 raise Exception(resp.get('message'))
             self.output(resp)
 
         except Exception as e:
-            self.logger.debug(
+            self.logger.error(
                 'Register {} service failed'.format(service_name))
-            self.logger.debug(e.message)
+            self.logger.error(e.message)
             self.logger.debug(traceback.format_exc)

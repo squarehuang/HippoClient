@@ -13,7 +13,7 @@ default_api_port = common_util.get_conf('HippoManagerAPI', 'port')
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--hippo_id', help='')
+@click.option('--hippo_id', help='', required=True)
 @click.option('-i', '--interval', type=int, help='sec')
 @click.option('--api_host', help='hippo manager api host, Default: {}'.format(default_api_host))
 @click.option('--api_port', help='hippo manager api port, Default: {}'.format(default_api_port))

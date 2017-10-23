@@ -16,7 +16,7 @@ default_api_port = common_util.get_conf('HippoManagerAPI', 'port')
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
-@click.option('--hippo_id', help='')
+@click.option('--hippo_id', help='', required=True)
 @click.option('-f', '--force', is_flag=True, help='force stop and deregister if service is running')
 @click.option('-d', '--del_service', is_flag=True, help='delete service plugin from project')
 @click.option('--api_host', help='hippo manager api host, Default: {}'.format(default_api_host))
