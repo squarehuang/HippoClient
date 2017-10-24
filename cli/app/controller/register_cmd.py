@@ -22,12 +22,14 @@ class RegisterCommand(Command):
         project_home = kwargs.get('project_home')
         service_name = kwargs.get('service_name')
         host = kwargs.get('host')
-
         run_cmd = kwargs.get('run_cmd', None)
+
         if host is None:
             host = socket.gethostname()
         if service_name is None:
             service_name = os.path.basename(project_home)
+        if run_cmd is not None:
+            run_cmd = '\"{}\"'.format(run_cmd)
 
         return project_home, service_name, host, run_cmd
 
@@ -53,6 +55,15 @@ class RegisterCommand(Command):
             if double_check_service.status != 0:
                 raise Exception("Service plugin not found : {}".format(
                     double_check_service.stderr))
+
+            if run_cmd is None:
+                conf_name = '{}-env.conf'.format(service_name)
+                conf_path = os.path.join(
+                    project_home, 'hippo', 'etc', 'service_name', conf_name)
+                self.logger.warn(
+                    'Please fill in the {} file with "EXECUTE_CMD" value '.format(conf_path))
+
+            print()
             # call http
             register_request = HippoInstanceRequest(
                 host=host, path=project_home, serviceName=service_name)

@@ -10,6 +10,8 @@ from shell_service import ShellService
 class HippoBuildService(ShellService):
 
     def __init__(self):
+        super(HippoBuildService, self).__init__()
+
         '''
             check SHELL file path
         '''
@@ -66,6 +68,7 @@ class HippoBuildService(ShellService):
         path = os.path.join(self.path_prefix, 'build.sh')
         options_str = self._merge_options(cmd=cmd,
                                           build_server=build_server, build_account=build_account)
+        self.logger.info('options : {}'.format(options_str))
         return self.run(
             'sh {0} {1} --create-service {2} {3}'.format(path,
                                                          options_str, service_name, project_home))

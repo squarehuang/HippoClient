@@ -21,11 +21,7 @@ class std_output(str):
 class ShellService(BaseApp, object):
 
     def __init__(self):
-        pass
-        # self.process = None
-        # self._status = None
-        # self._stdout = None
-        # self._stderr = None
+        super(ShellService, self).__init__()
 
     def _create_process(self, command, stdin, cwd, env, shell):
         return subprocess.Popen(
@@ -38,18 +34,6 @@ class ShellService(BaseApp, object):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
-
-    # @property
-    # def status(self):
-    #     return self._status
-
-    # @property
-    # def stdout(self):
-    #     return self._stdout
-
-    # @property
-    # def stderr(self):
-    #     return self._stderr
 
     def run(self, cmd, **kwargs):
 

@@ -59,7 +59,7 @@ function install_plugin_func (){
   $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER mkdir -p ${PROJECT_HOME}/hippo
   $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER chmod -R 755 ${PROJECT_HOME}/hippo
 
-  rsync -avz --exclude 'service' ${template_path}/* $BUILD_ACCOUNT@$BUILD_SERVER:${PROJECT_HOME}/hippo/
+  rsync -az --exclude 'service' ${template_path}/* $BUILD_ACCOUNT@$BUILD_SERVER:${PROJECT_HOME}/hippo/
   $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER [[ -d "${PROJECT_HOME}/hippo" ]] ; cp_issuccess=$?
   $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER chmod -R 755 ${PROJECT_HOME}/hippo
   if [[ $cp_issuccess -ne 0 ]] ; then
@@ -151,9 +151,15 @@ function create_service_func (){
     if [[ -n $cmd ]] ; then
       log_info "[BUILD] add EXECUTE_CMD=\"${cmd}\" to ${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
       $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER $sed_command "/^EXECUTE_CMD/d" "${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
-      $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER echo "EXECUTE_CMD=\"${cmd}\"" >> "${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
+      # '' avoid ${PROJECT_HOME} convert to real value, \\\" for print EXECUTE_CMD=""
+      $ssh_cmd $BUILD_ACCOUNT@$BUILD_SERVER echo "EXECUTE_CMD=\\\"'${cmd}'\\\"" >> "${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
     fi
     log_info "[BUILD] Service Name : ${service_name}"
+    log_info "[BUILD] show ${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
+    log_info "[BUILD] ================${service_name}-env.conf Header ====================="
+    cat "${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
+    log_info "[BUILD] ================${service_name}-env.conf Footer ====================="
+
 }
 
 function delete_service_func() {

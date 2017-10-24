@@ -2,6 +2,7 @@
 export HIPPO_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 . "${HIPPO_HOME}"/build-tool/build-utils.sh
 
+
 example_path="$(cd "`dirname "$HIPPO_HOME"`"/..; pwd)"/test_project
 function usage ()
 {
@@ -90,9 +91,11 @@ while true ; do
         CMD=$2;
         shift 2
         if [[ $CMD =~ '{PROJECT_HOME}' ]] ; then
-          CMD="\\\$${CMD}"
-          echo "CMD "$CMD
+          # echo cmd: "$CMD"
+          CMD=`echo $CMD | sed 's/{PROJECT_HOME}/\${PROJECT_HOME}/g'`
         fi
+        # CMD=\"$CMD\"
+        echo cmd: "$CMD"
         ;;
     --build-account)
         export BUILD_ACCOUNT=$2;
@@ -124,7 +127,6 @@ if [[ -z $PROJECT_HOME ]] ; then
   usage
   exit 1
 fi
-
 export PROJECT_NAME="$(basename ${PROJECT_HOME})"
 
 function check_installed(){
