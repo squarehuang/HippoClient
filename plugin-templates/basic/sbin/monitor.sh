@@ -65,16 +65,18 @@ fi
 
 
 if [[ -z $INTERVAL ]] ; then
-  INTERVAL=5
+  INTERVAL=5000
 fi
 log_info "INTERVAL is $INTERVAL"
 err_cnt=1
 is_success=0
 
-INTERVAL_SEC=$INTERVAL/1000
+# convert to seconds
+INTERVAL_SEC=$(($INTERVAL/1000))
 echo "$INTERVAL_SEC"
 while [[ True ]]; do
-  sleep $INTERVAL
+  sleep $INTERVAL_SEC
+  # sleep $INTERVAL
   error_msg=''
   # start monitor
   status_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --status)
@@ -108,7 +110,7 @@ while [[ True ]]; do
   exec_time=`date +%s`
   exec_timems=$((exec_time*1000+`date "+%N"`/1000000))
 
-  message="{\"host\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":$own_pid,\"service_pid\":$service_pid,\"exec_time\":$exec_timems,\"is_success\":$is_success,\"error_msg\":\"$error_msg\",\"coordAdress\":\"$COORD_ADRESS\",\"interval\":$INTERVAL_SEC}"
+  message="{\"host\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":$own_pid,\"service_pid\":$service_pid,\"exec_time\":$exec_timems,\"is_success\":$is_success,\"error_msg\":\"$error_msg\",\"coordAdress\":\"$COORD_ADRESS\",\"interval\":$INTERVAL}"
   producer_cmd="$KAFKA_PRODUCER --broker-list ${KAFKA_HOST} --topic ${HEALTH_TOPIC}"
   #echo ${message} "|" ${producer_cmd}
 
