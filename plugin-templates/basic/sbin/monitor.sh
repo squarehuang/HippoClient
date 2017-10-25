@@ -14,14 +14,16 @@ function usage ()
     echo "[monitor]
     Usage: `basename $0` -i <interval> SERVICE_NAME
     OPTIONS:
-       -h|--help                        Show this message
-       -i|--interval <interval>         Monitor interval seconds, (default: 5)
+       -h|--help                          Show this message
+       -i|--interval <interval>           Monitor interval seconds, (default: 5)
        -c|--coordAddress <coordAddress>   Coordinate Address
+       -u|--user <user>                   User
+       
 
     "
 }
 
-args=`getopt -o hi:c: --long interval:coordAddress:,help \
+args=`getopt -o hi:c:u: --long interval:coordAddress:user:,help \
      -n 'monitor' -- "$@"`
 
 if [ $? != 0 ] ; then
@@ -39,6 +41,10 @@ while true; do
       ;;
     -c|--coordAddress)
       COORD_ADDRESS=$2
+      shift 2
+      ;;
+    -u|--user)
+      USERNAME=$2
       shift 2
       ;;
     -h|--help)
@@ -110,7 +116,7 @@ while [[ True ]]; do
   exec_time=`date +%s`
   exec_timems=$((exec_time*1000+`date "+%N"`/1000000))
 
-  message="{\"clientIP\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":$own_pid,\"service_pid\":$service_pid,\"exec_time\":$exec_timems,\"is_success\":$is_success,\"error_msg\":\"$error_msg\",\"coordAddress\":\"$COORD_ADDRESS\",\"interval\":$INTERVAL}"
+  message="{\"clientIP\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":$own_pid,\"service_pid\":$service_pid,\"exec_time\":$exec_timems,\"is_success\":$is_success,\"error_msg\":\"$error_msg\",\"coordAddress\":\"$COORD_ADDRESS\",\"interval\":$INTERVAL,\"user\":\"$USERNAME\"}"
   producer_cmd="$KAFKA_PRODUCER --broker-list ${KAFKA_HOST} --topic ${HEALTH_TOPIC}"
   #echo ${message} "|" ${producer_cmd}
 
