@@ -79,6 +79,7 @@ is_success=0
 
 # convert to seconds
 INTERVAL_SEC=$(($INTERVAL/1000))
+
 echo "$INTERVAL_SEC"
 while [[ True ]]; do
   sleep $INTERVAL_SEC
@@ -116,7 +117,9 @@ while [[ True ]]; do
   exec_time=`date +%s`
   exec_timems=$((exec_time*1000+`date "+%N"`/1000000))
 
-  message="{\"clientIP\": \"$HOSTNAME\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":$own_pid,\"service_pid\":$service_pid,\"exec_time\":$exec_timems,\"is_success\":$is_success,\"error_msg\":\"$error_msg\",\"coordAddress\":\"$COORD_ADDRESS\",\"interval\":$INTERVAL,\"user\":\"$USERNAME\"}"
+  # get client ip 
+  client_ip=`ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p'`
+  message="{\"clientIP\": \"$client_ip\",\"path\":\"$path\",\"service_name\":\"$SERVICE_NAME\",\"monitor_pid\":$own_pid,\"service_pid\":$service_pid,\"exec_time\":$exec_timems,\"is_success\":$is_success,\"error_msg\":\"$error_msg\",\"coordAddress\":\"$COORD_ADDRESS\",\"interval\":$INTERVAL,\"user\":\"$USERNAME\"}"
   producer_cmd="$KAFKA_PRODUCER --broker-list ${KAFKA_HOST} --topic ${HEALTH_TOPIC}"
   #echo ${message} "|" ${producer_cmd}
 
