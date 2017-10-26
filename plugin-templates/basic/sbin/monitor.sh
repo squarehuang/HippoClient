@@ -74,13 +74,15 @@ if [[ -z $INTERVAL ]] ; then
   INTERVAL=5000
 fi
 log_info "INTERVAL is $INTERVAL"
+log_info "coordAddress is $COORD_ADDRESS"
+log_info "USERNAME is $USERNAME"
+
 err_cnt=1
 is_success=0
 
 # convert to seconds
 INTERVAL_SEC=$(($INTERVAL/1000))
 
-echo "$INTERVAL_SEC"
 while [[ True ]]; do
   sleep $INTERVAL_SEC
   # sleep $INTERVAL
