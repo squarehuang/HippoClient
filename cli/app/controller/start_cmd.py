@@ -32,7 +32,6 @@ class StartCommand(Command):
                 id=hippo_id, interval=interval)
             is_success, resp = self.hippoServingService.start_service(
                 request_entity)
-
             if not is_success:
                 raise Exception(resp.get('message'))
             output_dict = self.refactor_result(resp)
@@ -41,4 +40,4 @@ class StartCommand(Command):
         except Exception as e:
             self.logger.error('Start {} service failed'.format(hippo_id))
             self.logger.error(e.message)
-            self.logger.debug(traceback.format_exc)
+            self.logger.error(traceback.format_exc())

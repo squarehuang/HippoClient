@@ -8,25 +8,26 @@ class HippoInstanceRequest(dict):
         id (str)
         pid (str)
         interval (int)
-        lastUpdateTime (string)
+        lastUpdateTime (str)
         state (str)
-        host (str)        
+        clientIp (str)        
         serviceName (str)
         path (str)
         execTime (str)
     """
 
-    def __init__(self, id=None, pid=None, interval=None, lastUpdateTime=None, state=None, host=None, serviceName=None, path=None, execTime=None):
+    def __init__(self, id=None, pid=None, interval=None, lastUpdateTime=None, state=None, clientIP=None, serviceName=None, path=None, execTime=None, user=None):
         super(HippoInstanceRequest, self).__init__({
             'id': id,
             'pid': pid,
             'interval': interval,
             'lastUpdateTime': lastUpdateTime,
             'state': state,
-            'host': host,
+            'clientIP': clientIP,
             'serviceName': serviceName,
             'path': path,
-            'execTime': execTime
+            'execTime': execTime,
+            'user': user
         })
 
     def to_simple(self):
@@ -41,5 +42,5 @@ class HippoInstanceRequest(dict):
         assert dict_obj
         return cls(dict_obj.get('id'), dict_obj.get('pid'), dict_obj.get('interval'),
                    dict_obj.get('lastUpdateTime'), dict_obj.get(
-                       'state'), dict_obj.get('host'),
-                   dict_obj.get('serviceName'), dict_obj.get('path'), dict_obj.get('execTime'))
+                       'state'), dict_obj.get('clientIP'),
+                   dict_obj.get('serviceName'), dict_obj.get('path'), dict_obj.get('execTime'), dict_obj.get('user'))

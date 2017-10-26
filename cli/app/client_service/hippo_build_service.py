@@ -41,7 +41,7 @@ class HippoBuildService(ShellService):
         return self.run(
             'sh {0} {1} --install {2}'.format(path, options_str, project_home))
 
-    def uninstall_plugin(self, instance_id=None, host=None, service_name=None, project_home=None, delete=False, force=False):
+    def uninstall_plugin(self, instance_id=None, client_ip=None, service_name=None, project_home=None, delete=False, force=False):
         '''
             Uninstall plugin to Project
             Usage : build.sh --uninstall $project_home
@@ -54,7 +54,7 @@ class HippoBuildService(ShellService):
             options_bool.append('force')
 
         options_str = self._merge_options(*options_bool,
-                                          instance_id=instance_id, host=host, service_name=service_name, project_home=project_home)
+                                          instance_id=instance_id, client_ip=client_ip, service_name=service_name, project_home=project_home)
         return self.run(
             'sh {0} {1} --uninstall'.format(path, options_str))
 

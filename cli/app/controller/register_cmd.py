@@ -21,36 +21,36 @@ class RegisterCommand(Command):
     def verify_args(self, **kwargs):
         project_home = kwargs.get('project_home')
         service_name = kwargs.get('service_name')
-        host = kwargs.get('host')
+        client_ip = kwargs.get('client_ip')
         run_cmd = kwargs.get('run_cmd', None)
+        user = kwargs.get('user')
 
-        if host is None:
-            host = socket.gethostname()
         if service_name is None:
             service_name = os.path.basename(project_home)
         if run_cmd is not None:
             run_cmd = '\"{}\"'.format(run_cmd)
-
-        return project_home, service_name, host, run_cmd
+        if user is None:
+            user = 'UNKNOWN'
+        return project_home, service_name, client_ip, run_cmd, user
 
     def execute(self, **kwargs):
-        project_home, service_name, host, run_cmd = self.verify_args(
+        project_home, service_name, client_ip, run_cmd, user = self.verify_args(
             **kwargs)
         try:
             check_service = self.hippoBuildService.check_service(
-                service_name=service_name, project_home=project_home, build_server=host)
+                service_name=service_name, project_home=project_home, build_server=client_ip)
 
             # 若 Project 未裝 plugin ，則先進行安裝
             if check_service.status != 0:
                 create_service = self.hippoBuildService.create_service(
-                    service_name=service_name, project_home=project_home, build_server=host, cmd=run_cmd)
+                    service_name=service_name, project_home=project_home, build_server=client_ip, cmd=run_cmd)
                 print("Install {0} Hippo Plugin to {1}:{2} ".format(
-                    service_name, host, project_home))
+                    service_name, client_ip, project_home))
                 self.logger.info('==== create service ====')
                 self.logger.info(create_service.stdout)
 
             double_check_service = self.hippoBuildService.check_service(
-                service_name=service_name, project_home=project_home, build_server=host)
+                service_name=service_name, project_home=project_home, build_server=client_ip)
 
             if double_check_service.status != 0:
                 raise Exception("Service plugin not found : {}".format(
@@ -63,10 +63,9 @@ class RegisterCommand(Command):
                 self.logger.warn(
                     'Please fill in the {} file with "EXECUTE_CMD" value '.format(conf_path))
 
-            print()
             # call http
             register_request = HippoInstanceRequest(
-                host=host, path=project_home, serviceName=service_name)
+                clientIP=client_ip, path=project_home, serviceName=service_name, user=user)
             is_success, resp = self.hippoServingService.register_service(
                 register_request)
 
@@ -78,4 +77,4 @@ class RegisterCommand(Command):
             self.logger.error(
                 'Register {} service failed'.format(service_name))
             self.logger.error(e.message)
-            self.logger.debug(traceback.format_exc)
+            self.logger.debug(traceback.format_exc())

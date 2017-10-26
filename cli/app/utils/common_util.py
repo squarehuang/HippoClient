@@ -1,5 +1,7 @@
 import os
 import ConfigParser
+import socket
+
 from common import const
 
 
@@ -20,6 +22,12 @@ def get_conf(section, name):
     config = ConfigParser.ConfigParser()
     path = gen_path(folder='etc', file=const.CONFIG_NAME)
     config.read(path)
-    # default_api_host = config.get('HippoManagerAPI', 'host')
-    # default_api_port = config.get('HippoManagerAPI', 'port')
     return config.get(section, name)
+
+
+def get_ip():
+    ipaddr = socket.gethostbyname(socket.gethostname())
+    return ipaddr
+
+
+get_ip()

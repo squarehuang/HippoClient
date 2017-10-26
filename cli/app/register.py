@@ -19,18 +19,17 @@ default_api_port = common_util.get_conf('HippoManagerAPI', 'port')
 @click.option('-p', '--project_home', required=True)
 @click.option('-s', '--service_name', help='Service name, Default: last directory name from ${project_home}')
 @click.option('-c', '--run_cmd', help='command for run service, you can use \"{PROJECT_HOME}\" variable to build command (e.g. "sh {PROJECT_HOME}/bin/message_client.py")')
-@click.option('--host', help='Project server host, Default: {}'.format(socket.gethostname()))
-@click.option('--api_host', help='hippo manager api host, Default: {}'.format(default_api_host))
-@click.option('--api_port', help='hippo manager api port, Default: {}'.format(default_api_port))
-def register(host, project_home, service_name, run_cmd, api_host, api_port):
-    if api_host is None:
-        api_host = default_api_host
-    if api_port is None:
-        api_port = default_api_port
+@click.option('--client_ip', default=common_util.get_ip(), help='Client server IP, Default: {}'.format(common_util.get_ip()))
+@click.option('--api_host', default=default_api_host, help='hippo manager api host, Default: {}'.format(default_api_host))
+@click.option('--api_port', default=default_api_port, help='hippo manager api port, Default: {}'.format(default_api_port))
+@click.option('-u', '--user', default='UNKNOWN', help='register user, Default: {}'.format('UNKNOWN'))
+def register(client_ip, project_home, service_name, run_cmd, api_host, api_port, user):
+    print(client_ip)
     api_url = '{}:{}'.format(api_host, api_port)
+    print(api_url)
     cmd = RegisterCommand(api_url)
-    cmd.execute(host=host, project_home=project_home,
-                service_name=service_name, run_cmd=run_cmd)
+    cmd.execute(client_ip=client_ip, project_home=project_home,
+                service_name=service_name, run_cmd=run_cmd, user=user)
 
 
 if __name__ == '__main__':

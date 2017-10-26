@@ -13,7 +13,7 @@ class HippoServingService(HttpService):
     """ call serving API. """
     __APP_NAME = 'hippo'
     # __HOST = 'localhost:8080'
-    __API_BASE = '/hippo/v0.1.0'
+    __API_BASE = '/hippo/v0.2.0'
 
     def __init__(self, host, api_base=None):
         """ Constructor of HippoServing. """
@@ -25,7 +25,7 @@ class HippoServingService(HttpService):
     def register_service(self, res):
         """ Register a Service.
         Arguments:
-            host
+            clientIP
             serviceName
             path
         Return:
@@ -136,6 +136,7 @@ class HippoServingService(HttpService):
             '/services/instances/{0}'.format(hippo_id))
         self.logger.debug('rtn_code: {}'.format(rtn_code))
         self.logger.debug('resp: {}'.format(resp))
+
         if rtn_code == 200:
             return True, HippoInstance.from_dict(resp)
         else:

@@ -1,16 +1,16 @@
 
 class RegisterResponse(dict):
-    def __init__(self, id, coordAddr=None):
+    def __init__(self, id, coordAddress=None):
         assert id
         super(RegisterResponse, self).__init__({
             'id': id,
-            'coordAddr': coordAddr
+            'coordAddress': coordAddress
 
         })
 
     @classmethod
     def from_dict(cls, dict_obj):
-        return cls(dict_obj['id'], dict_obj.get('coordAddr'))
+        return cls(dict_obj['id'], dict_obj.get('coordAddress'))
 
 
 class HippoInstance(dict):
@@ -23,13 +23,13 @@ class HippoInstance(dict):
         lastUpdateTime (string)
         state (str)
         config (dict)
-            host (str)        
+            clientIP (str)        
             serviceName (str)
             path (str)
             execTime (str)
     """
 
-    def __init__(self, id=None, pid=None, interval=None, lastUpdateTime=None, state=None, host=None, serviceName=None, path=None, execTime=None):
+    def __init__(self, id=None, pid=None, interval=None, lastUpdateTime=None, state=None, clientIP=None, serviceName=None, path=None, execTime=None, user=None):
         super(HippoInstance, self).__init__({
             'id': id,
             'pid': pid,
@@ -37,10 +37,11 @@ class HippoInstance(dict):
             'lastUpdateTime': lastUpdateTime,
             'state': state,
             'config': {
-                'host': host,
+                'clientIP': clientIP,
                 'serviceName': serviceName,
                 'path': path,
-                'execTime': execTime
+                'execTime': execTime,
+                "user": user
             }
         })
 
@@ -50,30 +51,31 @@ class HippoInstance(dict):
         return cls(dict_obj.get('id'), dict_obj.get('pid'), dict_obj.get('interval'),
                    dict_obj.get('lastUpdateTime'), dict_obj.get(
                        'state'), dict_obj.get(
-                       'config').get('host'), dict_obj.get(
+                       'config').get('clientIP'), dict_obj.get(
                        'config').get('serviceName'), dict_obj.get(
                        'config').get('path'), dict_obj.get(
-                       'config').get('execTime'))
+                       'config').get('execTime'), dict_obj.get(
+                       'config').get('user'))
 
 
 class HippoNode(dict):
     """ Structure for a Hippo Node.
     Fields:
-        coordAddr 
+        coordAddress 
         snapshotTime 
         instances (list): A list of Hippo instances.
     """
 
-    def __init__(self, coordAddr=None, snapshotTime=None, instances=None):
+    def __init__(self, coordAddress=None, snapshotTime=None, instances=None):
         super(HippoNode, self).__init__({
-            'coordAddr': coordAddr,
+            'coordAddress': coordAddress,
             'snapshotTime': snapshotTime,
             'instances': [x if isinstance(x, HippoInstance) else HippoInstance.from_dict(x) for x in instances]
         })
 
     @classmethod
     def from_dict(cls, dict_obj):
-        return cls(dict_obj['coordAddr'], dict_obj['snapshotTime'], dict_obj['instances'])
+        return cls(dict_obj['coordAddress'], dict_obj['snapshotTime'], dict_obj['instances'])
 
 
 class HippoMsg(dict):

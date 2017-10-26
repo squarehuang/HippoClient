@@ -39,4 +39,4 @@ class StopCommand(Command):
         except Exception as e:
             self.logger.error('Stop {} service failed'.format(hippo_id))
             self.logger.error(e.message)
-            self.logger.debug(traceback.format_exc)
+            self.logger.error(traceback.format_exc())
