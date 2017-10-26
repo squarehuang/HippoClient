@@ -7,7 +7,8 @@ import datetime
 
 from base_command import Command
 from client_service.hippo_serving_service import HippoServingService
-from entity.column_enum import HippoColumn, HippoNodeColumn
+from entity.column_enum import CliBeanColumn, HippoColumn, HippoNodeColumn
+
 from entity.request_entity import HippoInstanceRequest
 from entity.response_entity import HippoInstance
 
@@ -18,12 +19,11 @@ class StatusCommand(Command, object):
         self.hippoServingService = HippoServingService(api_url)
 
     def verify_args(self, **kwargs):
-        hippo_id = kwargs.get('hippo_id')
-
-        return hippo_id
+        return kwargs
 
     def execute(self, **kwargs):
-        hippo_id = self.verify_args(**kwargs)
+        inputs = self.verify_args(**kwargs)
+        hippo_id = inputs.get(CliBeanColumn.ID.value)
         try:
             # call http
             request_entity = HippoInstanceRequest(
@@ -42,10 +42,17 @@ class StatusCommand(Command, object):
             self.logger.debug(traceback.format_exc())
 
     def execute_node(self, **kwargs):
-        hippo_id = self.verify_args(**kwargs)
         try:
+            inputs = self.verify_args(**kwargs)
+            user = inputs.get(CliBeanColumn.USER.value)
+            client_ip = inputs.get(CliBeanColumn.CLIENT_IP.value)
+
+            request_entity = HippoInstanceRequest(
+                user=user, clientIP=client_ip)
+
             # call http
-            is_success, resp = self.hippoServingService.get_node_status()
+            is_success, resp = self.hippoServingService.get_node_status(
+                request_entity)
 
             if not is_success:
                 raise Exception(resp.get('message'))
@@ -55,12 +62,19 @@ class StatusCommand(Command, object):
         except Exception as e:
             self.logger.error('Get Node status failed')
             self.logger.error(e.message)
-            self.logger.debug(traceback.format_exc())
+            self.logger.error(traceback.format_exc())
 
     def execute_cluster(self, **kwargs):
         try:
+            inputs = self.verify_args(**kwargs)
+            user = inputs.get(CliBeanColumn.USER.value)
+            client_ip = inputs.get(CliBeanColumn.CLIENT_IP.value)
+
+            request_entity = HippoInstanceRequest(
+                user=user, clientIP=client_ip)
             # call http
-            is_success, resp = self.hippoServingService.get_cluster_status()
+            is_success, resp = self.hippoServingService.get_cluster_status(
+                request_entity)
 
             if not is_success:
                 raise Exception(resp.get('message'))
@@ -70,7 +84,7 @@ class StatusCommand(Command, object):
         except Exception as e:
             self.logger.error('Get Node status failed')
             self.logger.error(e.message)
-            self.logger.debug(traceback.format_exc())
+            self.logger.error(traceback.format_exc())
 
     def refactor_cluster_result(self, resp):
         node_list = []

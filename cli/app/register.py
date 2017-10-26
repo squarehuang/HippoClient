@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-import os
 import socket
 import ConfigParser
+import click
 from utils import common_util
 from controller.register_cmd import RegisterCommand
-import click
+
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -24,9 +24,7 @@ default_api_port = common_util.get_conf('HippoManagerAPI', 'port')
 @click.option('--api_port', default=default_api_port, help='hippo manager api port, Default: {}'.format(default_api_port))
 @click.option('-u', '--user', default='UNKNOWN', help='register user, Default: {}'.format('UNKNOWN'))
 def register(client_ip, project_home, service_name, run_cmd, api_host, api_port, user):
-    print(client_ip)
     api_url = '{}:{}'.format(api_host, api_port)
-    print(api_url)
     cmd = RegisterCommand(api_url)
     cmd.execute(client_ip=client_ip, project_home=project_home,
                 service_name=service_name, run_cmd=run_cmd, user=user)

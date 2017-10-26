@@ -5,7 +5,8 @@ import traceback
 
 from controller.base_command import Command
 from client_service.hippo_serving_service import HippoServingService
-from entity.column_enum import HippoColumn
+from entity.column_enum import HippoColumn, CliBeanColumn
+
 from entity.request_entity import HippoInstanceRequest
 
 
@@ -15,18 +16,21 @@ class StartCommand(Command):
         self.hippoServingService = HippoServingService(api_url)
 
     def verify_args(self, **kwargs):
-        hippo_id = kwargs.get('hippo_id')
-        interval = kwargs.get('interval')
 
-        # sec => ms
+        interval = kwargs.get(CliBeanColumn.INTERVAL.value)
+
         if interval != None:
             interval = interval * 1000
+            kwargs[CliBeanColumn.INTERVAL.value] = interval
 
-        return hippo_id, interval
+        return kwargs
 
     def execute(self, **kwargs):
-        hippo_id, interval = self.verify_args(**kwargs)
+
         try:
+            inputs = self.verify_args(**kwargs)
+            hippo_id = inputs.get(CliBeanColumn.ID.value)
+            interval = inputs.get(CliBeanColumn.INTERVAL.value)
             # call http
             request_entity = HippoInstanceRequest(
                 id=hippo_id, interval=interval)

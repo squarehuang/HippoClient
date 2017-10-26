@@ -9,7 +9,7 @@ from client_service.hippo_serving_service import HippoServingService
 from client_service.hippo_build_service import HippoBuildService
 from entity.request_entity import HippoInstanceRequest
 from entity.response_entity import HippoInstance
-from entity.column_enum import HippoColumn
+from entity.column_enum import HippoColumn, CliBeanColumn
 
 
 class RemoveCommand(Command):
@@ -18,15 +18,15 @@ class RemoveCommand(Command):
         self.hippoServingService = HippoServingService(api_url)
 
     def verify_args(self, **kwargs):
-        hippo_id = kwargs.get('hippo_id')
-        force = kwargs.get('force')
-        del_service = kwargs.get('del_service')
-
-        return hippo_id, force, del_service
+        return kwargs
 
     def execute(self, **kwargs):
-        hippo_id, force, del_service = self.verify_args(**kwargs)
+
         try:
+            inputs = self.verify_args(**kwargs)
+            hippo_id = inputs.get(CliBeanColumn.ID.value)
+            force = inputs.get(CliBeanColumn.FORCE.value)
+            del_service = inputs.get(CliBeanColumn.DEL_SERVICE.value)
             request_entity = HippoInstanceRequest(id=hippo_id)
             # stop service
             if force:
@@ -50,7 +50,7 @@ class RemoveCommand(Command):
         except Exception as e:
             self.logger.error('Remove {} service failed'.format(hippo_id))
             self.logger.error(e.message)
-            self.logger.debug(traceback.format_exc())
+            self.logger.error(traceback.format_exc())
 
     def _execute(self, status_resp):
         # 1. get project_home, service name by hippo http

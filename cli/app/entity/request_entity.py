@@ -1,5 +1,9 @@
 from column_enum import HippoColumn
 
+'''
+    Description: Manager API request entity 
+'''
+
 
 class HippoInstanceRequest(dict):
     """ Structure for a Request Hippo Instance .
@@ -10,7 +14,7 @@ class HippoInstanceRequest(dict):
         interval (int)
         lastUpdateTime (str)
         state (str)
-        clientIp (str)        
+        clientIP (str)        
         serviceName (str)
         path (str)
         execTime (str)

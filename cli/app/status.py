@@ -18,7 +18,9 @@ default_api_port = common_util.get_conf('HippoManagerAPI', 'port')
 @click.option('--api_port', default=default_api_port, help='hippo manager api port, Default: {}'.format(default_api_port))
 @click.option('-a', '--all_mode', is_flag=True, help='Get cluster status, Default: active')
 @click.option('-n', '--node_mode', is_flag=True, help='Get node (api_host) status')
-def status(id, all_mode, node_mode, api_host, api_port):
+@click.option('-u', '--user', help='filter by register user')
+@click.option('--client_ip',  help='filter by client server IP')
+def status(id, all_mode, node_mode, api_host, api_port, user, client_ip):
 
     api_url = '{}:{}'.format(api_host, api_port)
 
@@ -26,9 +28,9 @@ def status(id, all_mode, node_mode, api_host, api_port):
     if id != None:
         cmd.execute(hippo_id=id)
     elif node_mode == True:
-        cmd.execute_node()
+        cmd.execute_node(user=user, client_ip=client_ip)
     else:
-        cmd.execute_cluster()
+        cmd.execute_cluster(user=user, client_ip=client_ip)
 
 
 if __name__ == '__main__':

@@ -3,6 +3,8 @@
 from __future__ import print_function
 import time
 import traceback
+from urllib import urlencode, quote
+from collections import OrderedDict
 from http_service import HttpService
 from entity.column_enum import HippoColumn
 from entity.request_entity import HippoInstanceRequest
@@ -142,13 +144,24 @@ class HippoServingService(HttpService):
         else:
             return False, HippoMsg.from_dict(resp)
 
-    def get_node_status(self):
+    def gen_status_querystr(self, res):
+        parameters = [HippoColumn.USER.value, HippoColumn.CLIENTIP.value]
+        query_str = '?'
+        for col in parameters:
+            val = res.setdefault(col, None)
+            if val is not None:
+                query_str += '&{}={}'.format(col, val)
+        return query_str
+
+    def get_node_status(self, res):
         """ Get Node Services Status.
         Return:
             HippoInstanceCollection
         """
+
+        query_str = self.gen_status_querystr(res)
         rtn_code, resp = self.request_get(
-            '/services/node')
+            '/services/node{}'.format(query_str))
         self.logger.debug('rtn_code: {}'.format(rtn_code))
         self.logger.debug('resp: {}'.format(resp))
         if rtn_code == 200:
@@ -156,14 +169,15 @@ class HippoServingService(HttpService):
         else:
             return False, HippoMsg.from_dict(resp)
 
-    def get_cluster_status(self):
+    def get_cluster_status(self, res):
         """ Get Cluster Services Status.
         Return:
             HippoInstanceCollection
         """
+        query_str = self.gen_status_querystr(res)
         rtn_code, resp = self.request_get(
-            '/services')
-
+            '/services{}'.format(query_str))
+        print(query_str)
         self.logger.debug('rtn_code: {}'.format(rtn_code))
         self.logger.debug('resp: {}'.format(resp))
         if rtn_code == 200:

@@ -2,8 +2,23 @@
 from enum import Enum
 
 
+class CliBeanColumn(Enum):
+    ID = 'id'
+    PROJECT_HOME = 'project_home'
+    SERVICE_NAME = 'service_name'
+    CLIENT_IP = 'client_ip'
+    RUN_CMD = 'run_cmd'
+    API_HOST = 'api_host'
+    API_PORT = 'api_port'
+    COORDADDRESS = 'coord_address'
+    USER = 'user'
+    FORCE = 'force'
+    DEL_SERVICE = 'del_service'
+    INTERVAL = 'interval'
+
+
 class HippoColumn(Enum):
-    __order__ = 'ID SERVICENAME PID INTERVAL STATE CLIENTIP PATH LASTUPDATETIME EXECTIME USER'
+    __order__ = 'ID SERVICENAME PID INTERVAL STATE CLIENTIP PATH LASTUPDATETIME EXECTIME COORDADDRESS USER'
     ID = 'id'
     SERVICENAME = 'serviceName'
     PID = 'pid'
@@ -14,7 +29,7 @@ class HippoColumn(Enum):
     LASTUPDATETIME = 'lastUpdateTime'
     EXECTIME = 'execTime'
     CONFIG = 'config'
-    COORDADDR = 'coordAddr'
+    COORDADDRESS = 'coordAddress'
     USER = 'user'
 
 

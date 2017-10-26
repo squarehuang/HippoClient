@@ -65,7 +65,7 @@ class HttpService(BaseApp, object):
     def _request(self, api, method='get', headers=None, data=None):
         url = self._resolve_api_url(api)
 
-        self.logger.info('connect to {}'.format(url))
+        self.logger.debug('connect to {}'.format(url))
         if headers == None:
             headers = self.__common_headers.copy()
         try:

@@ -8,7 +8,7 @@ import datetime
 import json
 from base_command import Command
 from client_service.hippo_serving_service import HippoServingService
-from entity.column_enum import HippoColumn
+from entity.column_enum import HippoColumn, CliBeanColumn
 from entity.request_entity import HippoInstanceRequest
 from entity.response_entity import HippoInstance
 
@@ -19,13 +19,12 @@ class StopCommand(Command):
         self.hippoServingService = HippoServingService(api_host)
 
     def verify_args(self, **kwargs):
-        hippo_id = kwargs.get('hippo_id')
-
-        return hippo_id
+        return kwargs
 
     def execute(self, **kwargs):
-        hippo_id = self.verify_args(**kwargs)
         try:
+            inputs = self.verify_args(**kwargs)
+            hippo_id = inputs.get(CliBeanColumn.ID.value)
             # call http
             request_entity = HippoInstanceRequest(id=hippo_id)
             is_success, resp = self.hippoServingService.stop_service(

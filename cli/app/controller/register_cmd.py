@@ -4,9 +4,12 @@ from __future__ import print_function
 import os
 import traceback
 import socket
-
+from termcolor import colored, cprint
 
 from base_command import Command
+
+from entity.column_enum import CliBeanColumn
+
 from client_service.hippo_build_service import HippoBuildService
 from client_service.hippo_serving_service import HippoServingService
 from entity.request_entity import HippoInstanceRequest
@@ -19,23 +22,27 @@ class RegisterCommand(Command):
         self.hippoServingService = HippoServingService(api_url)
 
     def verify_args(self, **kwargs):
-        project_home = kwargs.get('project_home')
-        service_name = kwargs.get('service_name')
-        client_ip = kwargs.get('client_ip')
-        run_cmd = kwargs.get('run_cmd', None)
-        user = kwargs.get('user')
+        project_home = kwargs.get(CliBeanColumn.PROJECT_HOME.value)
+        service_name = kwargs.get(CliBeanColumn.SERVICE_NAME.value)
+        run_cmd = kwargs.get(CliBeanColumn.RUN_CMD.value)
 
         if service_name is None:
             service_name = os.path.basename(project_home)
+            kwargs[CliBeanColumn.SERVICE_NAME.value] = service_name
         if run_cmd is not None:
             run_cmd = '\"{}\"'.format(run_cmd)
-        if user is None:
-            user = 'UNKNOWN'
-        return project_home, service_name, client_ip, run_cmd, user
+            kwargs[CliBeanColumn.RUN_CMD.value] = run_cmd
+
+        return kwargs
 
     def execute(self, **kwargs):
-        project_home, service_name, client_ip, run_cmd, user = self.verify_args(
-            **kwargs)
+        inputs = self.verify_args(**kwargs)
+        project_home = inputs.get(CliBeanColumn.PROJECT_HOME.value)
+        service_name = inputs.get(CliBeanColumn.SERVICE_NAME.value)
+        client_ip = inputs.get(CliBeanColumn.CLIENT_IP.value)
+        run_cmd = inputs.get(CliBeanColumn.RUN_CMD.value)
+        user = inputs.get(CliBeanColumn.USER.value)
+
         try:
             check_service = self.hippoBuildService.check_service(
                 service_name=service_name, project_home=project_home, build_server=client_ip)
@@ -60,9 +67,9 @@ class RegisterCommand(Command):
                 conf_name = '{}-env.conf'.format(service_name)
                 conf_path = os.path.join(
                     project_home, 'hippo', 'etc', 'service_name', conf_name)
-                self.logger.warn(
-                    'Please fill in the {} file with "EXECUTE_CMD" value '.format(conf_path))
 
+                cprint('Please fill in the {} file with "EXECUTE_CMD" value \n'.format(
+                    conf_path), 'green')
             # call http
             register_request = HippoInstanceRequest(
                 clientIP=client_ip, path=project_home, serviceName=service_name, user=user)
