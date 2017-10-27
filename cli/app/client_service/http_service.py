@@ -64,8 +64,8 @@ class HttpService(BaseApp, object):
 
     def _request(self, api, method='get', headers=None, data=None):
         url = self._resolve_api_url(api)
-
         self.logger.debug('connect to {}'.format(url))
+
         if headers == None:
             headers = self.__common_headers.copy()
         try:
@@ -77,6 +77,10 @@ class HttpService(BaseApp, object):
             elif method == 'delete':
                 response = requests.delete(
                     url, headers=headers)
+        except Exception as e:
+            raise Exception('connect to {} failed'.format(url))
+
+        try:
             return response.status_code, json.loads(response.text)
         except ValueError as e:
             print('{} error: Illegal response ({}) from server'.format(

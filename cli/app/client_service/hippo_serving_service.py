@@ -6,6 +6,8 @@ import traceback
 from urllib import urlencode, quote
 from collections import OrderedDict
 from http_service import HttpService
+from utils import common_util
+
 from entity.column_enum import HippoColumn
 from entity.request_entity import HippoInstanceRequest
 from entity.response_entity import RegisterResponse, HippoInstance, HippoNode, HippoMsg
@@ -16,10 +18,16 @@ class HippoServingService(HttpService):
     __APP_NAME = 'hippo'
     # __HOST = 'localhost:8080'
     __API_BASE = '/hippo/v0.2.0'
+    # __API_BASE = '/hippo/v0.1.0'
 
     def __init__(self, host, api_base=None):
         """ Constructor of HippoServing. """
         assert host
+        if api_base is None:
+            api_base = common_util.get_conf('HippoManagerAPI', 'base')
+            print(api_base)
+
+        # read conf
         super(HippoServingService, self).__init__(HippoServingService.__APP_NAME,
                                                   api_host=host,
                                                   api_base=api_base if api_base else self.__API_BASE)
@@ -175,9 +183,9 @@ class HippoServingService(HttpService):
             HippoInstanceCollection
         """
         query_str = self.gen_status_querystr(res)
+
         rtn_code, resp = self.request_get(
             '/services{}'.format(query_str))
-        print(query_str)
         self.logger.debug('rtn_code: {}'.format(rtn_code))
         self.logger.debug('resp: {}'.format(resp))
         if rtn_code == 200:

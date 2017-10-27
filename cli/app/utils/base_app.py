@@ -5,8 +5,10 @@ import logging
 
 class BaseApp(object):
 
-    def __init__(self):
-        self._logger = get_logger()
+    def __init__(self, log_level=None):
+        if log_level is None:
+            log_level = logging.INFO
+        self._logger = get_logger(log_level)
 
     @property
     def logger(self):
