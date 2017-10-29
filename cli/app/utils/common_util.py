@@ -1,6 +1,7 @@
 import os
 import ConfigParser
 import socket
+from termcolor import colored, cprint
 
 from common import const
 
@@ -28,6 +29,17 @@ def get_conf(section, name):
 def get_ip():
     ipaddr = socket.gethostbyname(socket.gethostname())
     return ipaddr
+
+
+def print_by_file(filepath, color='white'):
+
+    with open(filepath) as fp:
+        line = fp.readline()
+        cnt = 1
+        while line:
+            cprint('{}'.format(line.strip()), color)
+            line = fp.readline()
+            cnt += 1
 
 
 get_ip()

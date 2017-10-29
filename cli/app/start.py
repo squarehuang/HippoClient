@@ -21,7 +21,7 @@ def start(id, interval, api_host, api_port):
 
     api_url = '{}:{}'.format(api_host, api_port)
     cmd = StartCommand(api_url)
-    cmd.execute(hippo_id=id, interval=interval)
+    cmd.execute(id=id, interval=interval)
 
 
 if __name__ == '__main__':

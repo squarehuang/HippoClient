@@ -21,7 +21,7 @@ default_api_port = common_util.get_conf('HippoManagerAPI', 'port')
 def stop(id, api_host, api_port):
     api_url = '{}:{}'.format(api_host, api_port)
     cmd = StopCommand(api_url)
-    cmd.execute(hippo_id=id)
+    cmd.execute(id=id)
 
 
 if __name__ == '__main__':

@@ -5,6 +5,7 @@ import os
 import traceback
 import socket
 from termcolor import colored, cprint
+from utils import common_util
 
 from base_command import Command
 
@@ -56,20 +57,23 @@ class RegisterCommand(Command):
                 self.logger.info('==== create service ====')
                 self.logger.info(create_service.stdout)
 
-            double_check_service = self.hippoBuildService.check_service(
-                service_name=service_name, project_home=project_home, build_server=client_ip)
+                double_check_service = self.hippoBuildService.check_service(
+                    service_name=service_name, project_home=project_home, build_server=client_ip)
 
-            if double_check_service.status != 0:
-                raise Exception("Service plugin not found : {}".format(
-                    double_check_service.stderr))
+                if double_check_service.status != 0:
+                    raise Exception("Service plugin not found : {}".format(
+                        double_check_service.stderr))
+            conf_name = '{}-env.conf'.format(service_name)
+            conf_path = os.path.join(
+                project_home, 'hippo', 'etc', service_name, conf_name)
 
-            if run_cmd is None:
-                conf_name = '{}-env.conf'.format(service_name)
-                conf_path = os.path.join(
-                    project_home, 'hippo', 'etc', 'service_name', conf_name)
-
-                cprint('Please fill in the {} file with "EXECUTE_CMD" value \n'.format(
-                    conf_path), 'green')
+            cprint('Please confirm that the {} file is filled in correctly'.format(
+                conf_path), 'green')
+            cprint('================{} Header ====================='.format(
+                conf_name), 'blue')
+            common_util.print_by_file(conf_path, 'blue')
+            cprint('================{} Footer =====================\n'.format(
+                conf_name), 'blue')
             # call http
             register_request = HippoInstanceRequest(
                 clientIP=client_ip, path=project_home, serviceName=service_name, user=user)
@@ -84,4 +88,4 @@ class RegisterCommand(Command):
             self.logger.error(
                 'Register {} service failed'.format(service_name))
             self.logger.error(e.message)
-            self.logger.debug(traceback.format_exc())
+            self.logger.error(traceback.format_exc())

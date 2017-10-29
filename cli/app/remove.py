@@ -25,7 +25,7 @@ def remove(id, force, del_service, api_host, api_port):
 
     api_url = '{}:{}'.format(api_host, api_port)
     cmd = RemoveCommand(api_url)
-    cmd.execute(hippo_id=id, force=force, del_service=del_service)
+    cmd.execute(id=id, force=force, del_service=del_service)
 
 
 if __name__ == '__main__':

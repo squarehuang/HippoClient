@@ -26,7 +26,7 @@ def status(id, all_mode, node_mode, api_host, api_port, user, client_ip):
 
     cmd = StatusCommand(api_url)
     if id != None:
-        cmd.execute(hippo_id=id)
+        cmd.execute(id=id)
     elif node_mode == True:
         cmd.execute_node(user=user, client_ip=client_ip)
     else:

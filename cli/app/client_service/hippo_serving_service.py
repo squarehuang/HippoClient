@@ -25,7 +25,6 @@ class HippoServingService(HttpService):
         assert host
         if api_base is None:
             api_base = common_util.get_conf('HippoManagerAPI', 'base')
-            print(api_base)
 
         # read conf
         super(HippoServingService, self).__init__(HippoServingService.__APP_NAME,
