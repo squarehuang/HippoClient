@@ -1,13 +1,17 @@
-# Hippo Plugin
+# Hippo Plugin Build Tool
 
-Hippo Plugin 是一個結合 Hippo Manager ，讓 microservice 達到監控與自動重啟的機制
+Hippo Plugin 是一個讓 microservice 具有彈性的 start|restart|stop|status 功能並加入自動監控重啟的機制
+
+Build Tool 能夠快速地自動化安裝 Hippo Plugin 到各個 Project
+
+本頁以手動執行 build tool 的情境，詳細介紹 build.sh 使用方式
 
 #### 項目結構
 
 | 文件夾        |     說明      |
 | :----------- | :----------- |
-| build-tool   | plugin 與 service 的自動化安裝/移除模組                      |
-| test         | 示範程式碼，Demo 一個 microservice 與 hippo pluing 的使用方式 |
+| build.sh     | plugin 與 service 的自動化安裝/移除模組                      |
+
 
 ## 前置作業
 
@@ -31,18 +35,6 @@ cat .ssh/id_rsa.pub >> .ssh/authorized_keys 即可
 
 ## Installation
 
-### 安裝 hippo plugin 到專案
-
-於 `plugin/build-tool` 資料夾執行 `build.sh`
-
-```shell=
-./build.sh --install $your-project-home
-./build.sh -i $your-project-home
-```
-
-查看 project path 目錄下會多一個 `hippo` 的資料夾
-
-
 ### 填寫 Kafka 相關資訊
 
 於 `$PROJECT_HOME/hippo/etc/env.conf`
@@ -61,15 +53,18 @@ KAFKA_HOST=localhost:9092
 HEALTH_TOPIC=service-health
 ```
 
-### 新增一個 service
+### 安裝 hippo plugin 到專案
 
-**於 Project 內的 hippo/build-tool**
-
-於 `plugin/build-tool` 資料夾執行 `build.sh`
+執行 `build-tool/build.sh` 
 
 ```shell=
-./build.sh --create-service $SERVICE $your-project-home
+./build.sh --install $your-project-home
+./build.sh -i $your-project-home
 ```
+
+查看 project path 目錄下會多一個 `hippo` 的資料夾
+
+### 新增一個 service
 
 ```shell=
 ./build.sh --create-service $SERVICE --cmd "sh {PROJECT_HOME}/sbin/mock_training.sh" $your-project-home
@@ -123,7 +118,7 @@ plugin/build-tool/build.sh [OPTIONS] PROJECT_PATH
 
 or
 
-./plugin/build-tool/build.sh -i ~/recommender_system
+./plugin/build-tool/build.sh -i --build-server 88.8.146.34 ~/recommender_system
 
 ```
 
@@ -174,6 +169,8 @@ recommender_system                       recommender-training
 ```
 
 ## HOW TO USE Service Plugin
+
+> 當 Project 已安裝 Hippo Plugin 可以使用以下指令啟動 service
 ### monitor-start
 
 啟動 monitor 服務
@@ -190,8 +187,10 @@ ${PROJECT_HOME}/hippo/bin/monitor-start [OPTIONS] SERVICE
 | short | command                    | description               | Default | Required |
 | :---- | :------------------------  | :------------------------ | :------ | :------- |
 | -h    | --help                     | Show help                 |         |          |
-| -i    | --interval                 | 監控的間隔(秒)              |         |TRUE      |
+| -i    | --interval                 | 監控的間隔(毫秒              |         |TRUE      |
 | -r    | --restart                  | 重啟服務模式                |FALSE    |FALSE     |
+| -c    | --coordAddress             | coordAddress              |FALSE    |FALSE     |
+| -u    | --user                     | 啟動服務的 user             |FALSE    |FALSE     |
 
 
 #### Example
@@ -199,13 +198,13 @@ ${PROJECT_HOME}/hippo/bin/monitor-start [OPTIONS] SERVICE
 啟動監控間隔 60 秒的 service `recommender-training`
 
 ```shell=
-${PROJECT_HOME}/hippo/bin/monitor-start -i 60 recommender-training
+${PROJECT_HOME}/hippo/bin/monitor-start -i 60000 recommender-training
 ```
 
 重新啟動一個監控間隔 30 秒的 service `recommender-training`
 
 ```shell
-${PROJECT_HOME}/hippo/bin/monitor-start -r -i 30 recommender-training
+${PROJECT_HOME}/hippo/bin/monitor-start -r -i 30000 recommender-training
 ```
 
 ### monitor-stop
