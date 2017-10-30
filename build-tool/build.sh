@@ -1,9 +1,9 @@
 # !/usr/bin/env bash
-export HIPPO_HOME="$(cd "`dirname "$0"`"/..; pwd)"
-. "${HIPPO_HOME}"/build-tool/build-utils.sh
+export APP_HOME="$(cd "`dirname "$0"`"/..; pwd)"
+. "${APP_HOME}"/build-tool/build-utils.sh
 
 
-example_path="$(cd "`dirname "$HIPPO_HOME"`"/..; pwd)"/test_project
+example_path="$(cd "`dirname "$APP_HOME"`"/..; pwd)"/test_project
 function usage ()
 {
     echo "[build-service]
