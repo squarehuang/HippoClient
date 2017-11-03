@@ -8,8 +8,20 @@ requirments_file="${APP_HOME}"/etc/requirements.txt
 
 function env_install ()
 {
+    echo "[info] install pip rsync"
+    os=$(uname -s)
+    if [ $os == "Linux" ]; then
+        yum install epel-release
+        yum install python-pip
+        yum -y install rsync
+    elif [ $os == "Darwin" ]; then
+        echo ""
+    fi
+    
     echo "[info] mkdir $PY_VENV"
     mkdir -p $PY_VENV
+    echo "[info] install virtualenv"
+    pip install virtualenv
     echo "[info] create python2.7 venv"
     virtualenv -p python2.7 $PY_VENV
     echo "[info] install pip2.7 setuptools in venv"
@@ -49,7 +61,7 @@ eval set -- "$args"
 
 while true ; do
   case "$1" in
-    -i|--all)
+    -a|--all)
          shift
          env_install
          export_variable
