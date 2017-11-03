@@ -46,19 +46,19 @@ class RegisterCommand(Command):
 
         try:
             check_service = self.hippoBuildService.check_service(
-                service_name=service_name, project_home=project_home, build_server=client_ip)
+                service_name=service_name, project_home=project_home,  build_account=user)
 
             # 若 Project 未裝 plugin ，則先進行安裝
             if check_service.status != 0:
                 create_service = self.hippoBuildService.create_service(
-                    service_name=service_name, project_home=project_home, build_server=client_ip, cmd=run_cmd)
+                    service_name=service_name, project_home=project_home,  cmd=run_cmd, build_account=user)
                 print("Install {0} Hippo Plugin to {1}:{2} ".format(
                     service_name, client_ip, project_home))
                 self.logger.info('==== create service ====')
                 self.logger.info(create_service.stdout)
 
                 double_check_service = self.hippoBuildService.check_service(
-                    service_name=service_name, project_home=project_home, build_server=client_ip)
+                    service_name=service_name, project_home=project_home, build_account=user)
 
                 if double_check_service.status != 0:
                     raise Exception("Service plugin not found : {}".format(
