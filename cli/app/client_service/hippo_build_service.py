@@ -56,7 +56,7 @@ class HippoBuildService(ShellService):
         options_str = self._merge_options(*options_bool,
                                           instance_id=instance_id, client_ip=client_ip, service_name=service_name, project_home=project_home)
         return self.run(
-            'sh {0} {1} --uninstall'.format(path, options_str))
+            'bash {0} {1} --uninstall'.format(path, options_str))
 
     def create_service(self, service_name, project_home, cmd=None, build_server=None, build_account=None):
         '''
@@ -70,8 +70,8 @@ class HippoBuildService(ShellService):
                                           build_server=build_server, build_account=build_account)
         self.logger.info('options : {}'.format(options_str))
         return self.run(
-            'sh {0} {1} --create-service {2} {3}'.format(path,
-                                                         options_str, service_name, project_home))
+            'bash {0} {1} --create-service {2} {3}'.format(path,
+                                                           options_str, service_name, project_home))
 
     def delete_service(self, service_name, project_home, build_server=None, build_account=None):
         '''
@@ -84,8 +84,8 @@ class HippoBuildService(ShellService):
         options_str = self._merge_options(
             build_server=build_server, build_account=build_account)
         return self.run(
-            'sh {0} {1} --delete-service {2} {3}'.format(path,
-                                                         options_str, service_name, project_home))
+            'bash {0} {1} --delete-service {2} {3}'.format(path,
+                                                           options_str, service_name, project_home))
 
     def check_service(self, service_name, project_home, build_server=None, build_account=None):
         '''
@@ -98,5 +98,5 @@ class HippoBuildService(ShellService):
         options_str = self._merge_options(
             build_server=build_server, build_account=build_account)
         return self.run(
-            'sh {0} {1} --check-service {2} {3}'.format(path,
-                                                        options_str, service_name, project_home))
+            'bash {0} {1} --check-service {2} {3}'.format(path,
+                                                          options_str, service_name, project_home))

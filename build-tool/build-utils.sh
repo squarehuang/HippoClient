@@ -1,3 +1,4 @@
+#!/bin/bash
 function log_info (){
     echo "[INFO]$*"
 }
@@ -150,7 +151,7 @@ function create_service_func (){
       log_info "[BUILD] add EXECUTE_CMD=\"${cmd}\" to ${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
       $sed_command "/^EXECUTE_CMD/d" "${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
       # '' avoid ${PROJECT_HOME} convert to real value, \\\" for print EXECUTE_CMD=""
-      echo "EXECUTE_CMD=\\\"'${cmd}'\\\"" >> "${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
+      echo "EXECUTE_CMD=\"${cmd}\"" >> "${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
     fi
     log_info "[BUILD] Service Name : ${service_name}"
     log_info "[BUILD] show ${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"

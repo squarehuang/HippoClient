@@ -1,4 +1,4 @@
-# !/usr/bin/env bash
+#!/bin/bash
 export APP_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 . "${APP_HOME}"/build-tool/build-utils.sh
 
