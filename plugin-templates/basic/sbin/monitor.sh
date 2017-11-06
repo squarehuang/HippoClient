@@ -118,7 +118,8 @@ while [[ True ]]; do
   own_pid=$$
   path=$PROJECT_HOME
   exec_time=`date +%s`
-  exec_timems=$((exec_time*1000+`date "+%N"`/1000000))
+  exec_timems=$exec_time"000"
+  # exec_timems=$((exec_time*1000+`date "+%N"`/1000000))
 
   # get client ip 
   client_ip=`ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p'`

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # export APP_HOME="$(cd -P "`dirname "$0"/`"/..; pwd -P)"
 

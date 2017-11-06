@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
 
@@ -7,7 +7,7 @@ HIPPO_DIR=${PROJECT_HOME}/hippo
 HIPPO_BIN_DIR=${HIPPO_DIR}/bin
 HIPPO_CONF_DIR=${HIPPO_DIR}/etc
 
-. "${HIPPO_BIN_DIR}/utils.sh"
+source "${HIPPO_BIN_DIR}/utils.sh"
 
 function usage ()
 {
@@ -117,7 +117,9 @@ while [[ True ]]; do
   own_pid=$$
   path=$PROJECT_HOME
   exec_time=`date +%s`
-  exec_timems=$((exec_time*1000+`date "+%N"`/1000000))
+  # exec_timems=$((exec_time*1000+`date "+%N"`/1000000))
+  exec_timems=$exec_time"000"
+
 
   # get client ip 
   client_ip=`ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p'`

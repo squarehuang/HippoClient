@@ -18,13 +18,12 @@ HIPPO_LOG_DIR=${HIPPO_DIR}/var/logs
 . "${HIPPO_CONF_DIR}/runtime-env-info.sh"
 
 while read assignment; do
+  echo $assignment
   if [[ $assignment != *"#"* ]] ; then
     if [ ! -z "$assignment" -a "$assignment" != " " ]; then
       export "$assignment"
     fi
   fi
-
-
 done < ${HIPPO_CONF_DIR}/env.conf
 
 function usage ()
