@@ -16,14 +16,14 @@ HIPPO_LOG_DIR=${HIPPO_DIR}/var/logs
 
 . "${HIPPO_CONF_DIR}/env.conf"
 . "${HIPPO_CONF_DIR}/runtime-env-info.sh"
-
 while read assignment; do
-  echo $assignment
   if [[ $assignment != *"#"* ]] ; then
     if [ ! -z "$assignment" -a "$assignment" != " " ]; then
       export "$assignment"
     fi
   fi
+
+
 done < ${HIPPO_CONF_DIR}/env.conf
 
 function usage ()
@@ -123,7 +123,7 @@ fi
 function start() {
   service_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --start)
   service_retcode=$?
-  cmd="sh ${HIPPO_SBIN_DIR}/monitor.sh $OPTIONS_STR $SERVICE_NAME "
+  cmd="bash ${HIPPO_SBIN_DIR}/monitor.sh $OPTIONS_STR $SERVICE_NAME "
   monitor_retout=$(${HIPPO_SBIN_DIR}/daemon.sh $MONITOR start 1 $cmd)
   monitor_retcode=$?
   if [[ $monitor_retcode == 0 && $service_retcode == 0 ]]; then
@@ -156,7 +156,7 @@ function start() {
 
 
 function stop() {
-  sh ${HIPPO_BIN_DIR}/monitor-stop $SERVICE_NAME
+  bash ${HIPPO_BIN_DIR}/monitor-stop $SERVICE_NAME
 }
 
 
