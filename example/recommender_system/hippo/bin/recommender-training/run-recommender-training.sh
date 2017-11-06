@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 export PROJECT_HOME="$(cd "`dirname "$0"`"/../../..; pwd)"
 
