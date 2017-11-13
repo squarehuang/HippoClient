@@ -10,7 +10,7 @@ from utils import common_util
 
 from entity.column_enum import HippoColumn
 from entity.request_entity import HippoInstanceRequest
-from entity.response_entity import RegisterResponse, HippoInstance, HippoNode, HippoMsg
+from entity.response_entity import RegisterResponse, HippoInstance, HippoNode, HippoMsg, KeyResponse
 
 
 class HippoServingService(HttpService):
@@ -189,6 +189,21 @@ class HippoServingService(HttpService):
         self.logger.debug('resp: {}'.format(resp))
         if rtn_code == 200:
             return True, [HippoNode.from_dict(node) for node in resp]
+        else:
+            return False, HippoMsg.from_dict(resp)
+
+    def get_sshkey(self):
+        """ Get a Service Status.
+        Return:
+            HippoInstance
+        """
+
+        rtn_code, resp = self.request_get('/services/key')
+        self.logger.debug('rtn_code: {}'.format(rtn_code))
+        self.logger.debug('resp: {}'.format(resp))
+
+        if rtn_code == 200:
+            return True, KeyResponse.from_dict(resp)
         else:
             return False, HippoMsg.from_dict(resp)
 
