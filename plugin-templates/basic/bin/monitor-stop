@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
 
 export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
 
@@ -100,11 +101,11 @@ function stop() {
 }
 
 function stop_monitor() {
-  sh ${HIPPO_SBIN_DIR}/daemon.sh $MONITOR stop 1
+  bash ${HIPPO_SBIN_DIR}/daemon.sh $MONITOR stop 1
 }
 
 function stop_service() {
-  sh ${HIPPO_SBIN_DIR}/daemon.sh $SERVICE_NAME stop 1
+  bash ${HIPPO_SBIN_DIR}/daemon.sh $SERVICE_NAME stop 1
 }
 
 stop

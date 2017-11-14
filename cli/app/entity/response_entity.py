@@ -13,6 +13,18 @@ class RegisterResponse(dict):
         return cls(dict_obj['id'], dict_obj.get('coordAddress'))
 
 
+class KeyResponse(dict):
+    def __init__(self, key):
+        assert key
+        super(KeyResponse, self).__init__({
+            'key': key
+        })
+
+    @classmethod
+    def from_dict(cls, dict_obj):
+        return cls(dict_obj['key'])
+
+
 class HippoInstance(dict):
     """ Structure for a HippoInstance.
 

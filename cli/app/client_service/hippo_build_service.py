@@ -28,7 +28,7 @@ class HippoBuildService(ShellService):
         options_kv.extend(options_bool)
         return ' '.join(options_kv)
 
-    def install_plugin(self, project_home,  build_server=None, build_account=None):
+    def install_plugin(self, project_home,   build_account=None):
         '''
             Install plugin to Project
             Usage : build.sh --install $project_home
@@ -36,8 +36,7 @@ class HippoBuildService(ShellService):
         assert project_home
         path = os.path.join(self.path_prefix, 'build.sh')
 
-        options_str = self._merge_options(
-            build_server=build_server, build_account=build_account)
+        options_str = self._merge_options(build_account=build_account)
         return self.run(
             'sh {0} {1} --install {2}'.format(path, options_str, project_home))
 
@@ -56,9 +55,9 @@ class HippoBuildService(ShellService):
         options_str = self._merge_options(*options_bool,
                                           instance_id=instance_id, client_ip=client_ip, service_name=service_name, project_home=project_home)
         return self.run(
-            'sh {0} {1} --uninstall'.format(path, options_str))
+            'bash {0} {1} --uninstall'.format(path, options_str))
 
-    def create_service(self, service_name, project_home, cmd=None, build_server=None, build_account=None):
+    def create_service(self, service_name, project_home, cmd=None,  build_account=None):
         '''
             Usage : build.sh --create-service=SERVICE $project_home
         '''
@@ -66,14 +65,13 @@ class HippoBuildService(ShellService):
         assert project_home
 
         path = os.path.join(self.path_prefix, 'build.sh')
-        options_str = self._merge_options(cmd=cmd,
-                                          build_server=build_server, build_account=build_account)
+        options_str = self._merge_options(cmd=cmd, build_account=build_account)
         self.logger.info('options : {}'.format(options_str))
         return self.run(
-            'sh {0} {1} --create-service {2} {3}'.format(path,
-                                                         options_str, service_name, project_home))
+            'bash {0} {1} --create-service {2} {3}'.format(path,
+                                                           options_str, service_name, project_home))
 
-    def delete_service(self, service_name, project_home, build_server=None, build_account=None):
+    def delete_service(self, service_name, project_home, build_account=None):
         '''
             Usage : build.sh --delete-service=SERVICE $project_home
         '''
@@ -81,13 +79,12 @@ class HippoBuildService(ShellService):
         assert project_home
 
         path = os.path.join(self.path_prefix, 'build.sh')
-        options_str = self._merge_options(
-            build_server=build_server, build_account=build_account)
+        options_str = self._merge_options(build_account=build_account)
         return self.run(
-            'sh {0} {1} --delete-service {2} {3}'.format(path,
-                                                         options_str, service_name, project_home))
+            'bash {0} {1} --delete-service {2} {3}'.format(path,
+                                                           options_str, service_name, project_home))
 
-    def check_service(self, service_name, project_home, build_server=None, build_account=None):
+    def check_service(self, service_name, project_home,  build_account=None):
         '''
             Usage : build.sh --check-service=SERVICE $project_home
         '''
@@ -95,8 +92,7 @@ class HippoBuildService(ShellService):
         assert project_home
 
         path = os.path.join(self.path_prefix, 'build.sh')
-        options_str = self._merge_options(
-            build_server=build_server, build_account=build_account)
+        options_str = self._merge_options(build_account=build_account)
         return self.run(
-            'sh {0} {1} --check-service {2} {3}'.format(path,
-                                                        options_str, service_name, project_home))
+            'bash {0} {1} --check-service {2} {3}'.format(path,
+                                                          options_str, service_name, project_home))

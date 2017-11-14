@@ -50,3 +50,6 @@ Thumbs.db
 */classes
 runtime/
 runtime_test/
+
+# python virtual ENV
+venv/

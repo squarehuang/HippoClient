@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
 
 
 export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
@@ -95,11 +96,11 @@ function status() {
 }
 
 function status_monitor() {
-  sh ${HIPPO_SBIN_DIR}/daemon.sh $MONITOR status 1
+  bash ${HIPPO_SBIN_DIR}/daemon.sh $MONITOR status 1
 }
 
 function status_service() {
-  sh ${HIPPO_SBIN_DIR}/daemon.sh $SERVICE_NAME status 1
+  bash ${HIPPO_SBIN_DIR}/daemon.sh $SERVICE_NAME status 1
 }
 
 

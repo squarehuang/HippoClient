@@ -10,6 +10,7 @@ class CliBeanColumn(Enum):
     RUN_CMD = 'run_cmd'
     API_HOST = 'api_host'
     API_PORT = 'api_port'
+    API_URL = 'api_url'
     COORDADDRESS = 'coord_address'
     USER = 'user'
     FORCE = 'force'

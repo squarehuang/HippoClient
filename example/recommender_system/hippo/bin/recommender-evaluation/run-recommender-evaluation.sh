@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 export PROJECT_HOME="$(cd "`dirname "$0"`"/../../..; pwd)"
 
@@ -27,15 +27,15 @@ done < ${HIPPO_CONF_DIR}/env.conf
 
 function start() {
   cmd=$EXECUTE_CMD
-  sh ${HIPPO_SBIN_DIR}/daemon.sh ${SERVICE_NAME} start 1 $cmd
+  bash ${HIPPO_SBIN_DIR}/daemon.sh ${SERVICE_NAME} start 1 $cmd
 }
 
 function stop() {
-  sh ${HIPPO_SBIN_DIR}/daemon.sh ${SERVICE_NAME} stop 1
+  bash ${HIPPO_SBIN_DIR}/daemon.sh ${SERVICE_NAME} stop 1
 }
 
 function status() {
-  sh ${HIPPO_SBIN_DIR}/daemon.sh ${SERVICE_NAME} status 1
+  bash ${HIPPO_SBIN_DIR}/daemon.sh ${SERVICE_NAME} status 1
 }
 
 function restart() {

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 if [ -z "${PROJECT_HOME}" ]; then
   export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"

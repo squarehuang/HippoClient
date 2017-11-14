@@ -96,7 +96,7 @@ Options:
                            ${project_home}
   -c, --run_cmd TEXT       command for run service, you can use
                            "{PROJECT_HOME}" variable to build command (e.g.
-                           "sh {PROJECT_HOME}/bin/message_client.py")
+                           "python {PROJECT_HOME}/bin/message_client.py")
   --client_ip TEXT         Client server IP, Default: 192.168.0.106
   --api_host TEXT          hippo manager api host, Default: localhost
   --api_port TEXT          hippo manager api port, Default: 8080
@@ -363,4 +363,4 @@ hippo status --client_ip 192.168.0.106
 
 ```bash
 hippo status --id 6c58b631148c86d43e3b1c66bdb73d3f
-```
+```# git-workshop
