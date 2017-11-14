@@ -1,4 +1,4 @@
-# !/usr/bin/env bash
+# !/bin/bash
 
 export APP_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 requirments_file="${APP_HOME}"/etc/requirements.txt
