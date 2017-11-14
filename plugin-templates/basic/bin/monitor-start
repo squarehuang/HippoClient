@@ -1,0 +1,172 @@
+#!/bin/bash
+
+
+
+export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
+
+# project folder name 
+PROJECT_NAME="$(basename ${PROJECT_HOME})"
+MONITOR_PREFIX="Monitor-"
+HIPPO_DIR=${PROJECT_HOME}/hippo
+HIPPO_BIN_DIR=${HIPPO_DIR}/bin
+HIPPO_SBIN_DIR=${HIPPO_DIR}/sbin
+HIPPO_CONF_DIR=${HIPPO_DIR}/etc
+HIPPO_LOG_DIR=${HIPPO_DIR}/var/logs
+
+
+. "${HIPPO_CONF_DIR}/env.conf"
+. "${HIPPO_CONF_DIR}/runtime-env-info.sh"
+while read assignment; do
+  if [[ $assignment != *"#"* ]] ; then
+    if [ ! -z "$assignment" -a "$assignment" != " " ]; then
+      export "$assignment"
+    fi
+  fi
+
+
+done < ${HIPPO_CONF_DIR}/env.conf
+
+function usage ()
+{
+    temp_serivce_name="$(basename ${PROJECT_HOME})"
+    echo "[monitor-start]
+    Usage: `basename $0` [OPTIONS] SERVICE
+    e.g. `basename $0` -i 60 "$temp_serivce_name"
+    OPTIONS:
+       -h|--help                          Show this message
+       -i|--interval <interval>           Monitor interval millisecond,required
+       -r|--restart                       Restart monitor, (default: false)
+       -c|--coordAddress <coordAddress>   Coordinate Address
+       -u|--user <user>                   User
+       
+    "
+}
+
+
+args=`getopt -o rhi:c:u: --long interval:,restart,coordAddress:,user:,help \
+     -n 'monitor-run' -- "$@"`
+
+if [ $? != 0 ] ; then
+  echo "terminating..." >&2 ;
+  exit 1 ;
+fi
+eval set -- "$args"
+
+while true ; do
+        case "$1" in
+                -r|--restart)
+                     IS_RESTART="true"
+                     shift
+                      ;;
+                -i|--interval)
+                     INTERVAL="$2";
+                     shift 2
+                     ;;
+                -c|--coordAddress)
+                     COORD_ADDRESS="$2";
+                     shift 2
+                     ;;
+                -u|--user)
+                     USERNAME="$2";
+                     shift 2
+                     ;;
+                -h|--help )
+                    usage
+                    exit
+                    ;;
+                --)
+                    shift ;
+                    break
+                    ;;
+                *)
+                    echo "internal error!" ;
+                    exit 1
+                    ;;
+        esac
+done
+
+for arg do
+   SERVICE_NAME=$arg
+done
+
+# check for required args
+if [[ -z $SERVICE_NAME ]] ; then
+  echo "$(basename $0): missing SERVICE"
+  usage
+  exit 1
+fi
+
+
+MONITOR="${MONITOR_PREFIX}${SERVICE_NAME}"
+OPTIONS_STR=""
+if [[ -z $INTERVAL ]] ; then
+  echo "$(basename $0): missing interval"
+  usage
+  exit 1
+fi
+INTERVAL_OPT="-i $INTERVAL "
+OPTIONS_STR=$INTERVAL_OPT
+if [[ -n $COORD_ADDRESS ]] ; then
+  COORD_ADDRESS_OPT="-c $COORD_ADDRESS "
+  OPTIONS_STR=$OPTIONS_STR$COORD_ADDRESS_OPT
+fi
+
+if [[ -n $USERNAME ]] ; then
+  USER_OPT="-u $USERNAME"
+  OPTIONS_STR=$OPTIONS_STR$USER_OPT
+fi
+
+if [[ -z $IS_RESTART ]] ; then
+  IS_RESTART="false"
+fi
+
+function start() {
+  service_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --start)
+  service_retcode=$?
+  cmd="bash ${HIPPO_SBIN_DIR}/monitor.sh $OPTIONS_STR $SERVICE_NAME "
+  monitor_retout=$(${HIPPO_SBIN_DIR}/daemon.sh $MONITOR start 1 $cmd)
+  monitor_retcode=$?
+  if [[ $monitor_retcode == 0 && $service_retcode == 0 ]]; then
+    RETVAL=0
+  elif [[ $monitor_retcode == 2 && $service_retcode == 2 ]]; then
+    # duplicate start
+    RETVAL=2
+  elif [[ $monitor_retcode == 2 && $service_retcode == 0 ]]; then
+    # duplicate start
+    RETVAL=2
+  elif [[ $monitor_retcode == 0 && $service_retcode == 2 ]]; then
+    # duplicate start
+    RETVAL=2
+  else
+    RETVAL=1
+    # kill process
+    stop >/dev/null 2>&1
+  fi
+
+  if [[ $RETVAL == 0 ]]; then
+    echo $monitor_retout
+    echo $service_retout
+  else
+    >&2 echo $monitor_retout
+    >&2 echo $service_retout
+  fi
+
+  exit $RETVAL
+}
+
+
+function stop() {
+  bash ${HIPPO_BIN_DIR}/monitor-stop $SERVICE_NAME
+}
+
+
+function restart() {
+  stop
+  start
+}
+
+if [[ $IS_RESTART == "true" ]] ; then
+  restart
+else
+  start
+fi

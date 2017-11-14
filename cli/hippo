@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# export APP_HOME="$(cd -P "`dirname "$0"/`"/..; pwd -P)"
+
+# for link file
+if [[ -L $0 ]] ; then
+    pushd `readlink $0 | xargs dirname` > /dev/null \
+    || pushd `dirname $0` > /dev/null
+else
+    cd "`dirname "$0"`"
+fi
+
+export APP_HOME=`cd .. ; pwd -P`
+
+
+while read assignment; do
+  if [[ $assignment != *"#"* ]] ; then
+    if [ ! -z "$assignment" -a "$assignment" != " " ]; then
+      export "$assignment"
+    fi
+  fi
+done < ${APP_HOME}/etc/env.conf
+
+. "${APP_HOME}/etc/env.conf"
+. "${APP_HOME}/etc/runtime-env-info.sh"
+
+
+nowcmd=`basename $0`
+usage(){
+    for i in ${APP_HOME}/cli/app/*.py; do
+        filename=${i##*/}
+        [ ! -L "$i" -a -f "$i"  ] && echo "$nowcmd ${filename%.*}"
+    done
+
+    [ "${COMMAND}" == "help" ] && exit 0 || exit 1
+}
+
+COMMAND=$1; shift;
+
+[ ! -f ${APP_HOME}/cli/app/${COMMAND}.py ] && usage
+python ${APP_HOME}/cli/app/${COMMAND}.py "$@"
+
+
