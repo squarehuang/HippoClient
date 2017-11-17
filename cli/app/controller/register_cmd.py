@@ -56,7 +56,7 @@ class RegisterCommand(Command):
             self.logger.info(
                 "Add hippo manager ({}) ssh key to lcoal".format(api_url))
             self.logger.info(sshkey)
-            with open(auth_file, 'w+') as f:
+            with open(auth_file, 'a') as f:
                 f.write(sshkey)
         self.logger.info('Set Authkey Success')
         print()
