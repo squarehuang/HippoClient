@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 if [ -z "${PROJECT_HOME}" ]; then
   export PROJECT_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
 fi
@@ -107,6 +106,8 @@ stop() {
     fi
      # 檢查該進程是否存在
     if kill -0 $TARGET_ID > /dev/null 2>&1; then
+      # Killing all descendent processes
+      pkill -9 -P $TARGET_ID
       kill -9 "$TARGET_ID" && rm -f "$pid"
       echo "Stopping $service_type successfully , whose pid is $TARGET_ID"
     else

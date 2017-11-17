@@ -121,8 +121,18 @@ if [[ -z $IS_RESTART ]] ; then
 fi
 
 function start() {
-  service_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --start)
-  service_retcode=$?
+  # check service status
+  service_status_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --status)
+  service_status_retcode=$?
+  
+  if [[ $service_status_retcode == 0 ]] ; then
+    service_retout=$service_status_retout
+    service_retcode=0
+  else
+    service_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --start)
+    service_retcode=$?
+  fi
+  # start monitor
   cmd="bash ${HIPPO_SBIN_DIR}/monitor.sh $OPTIONS_STR $SERVICE_NAME "
   monitor_retout=$(${HIPPO_SBIN_DIR}/daemon.sh $MONITOR start 1 $cmd)
   monitor_retcode=$?
