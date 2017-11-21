@@ -4,7 +4,7 @@ from __future__ import print_function
 import traceback
 
 from controller.base_command import Command
-from client_service.hippo_serving_service import HippoServingService
+from client.hippo_serving_service import HippoServingService
 from entity.column_enum import HippoColumn, CliBeanColumn
 
 from entity.request_entity import HippoInstanceRequest

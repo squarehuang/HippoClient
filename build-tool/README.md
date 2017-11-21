@@ -35,24 +35,6 @@ cat .ssh/id_rsa.pub >> .ssh/authorized_keys 即可
 
 ## Installation
 
-### 填寫 Kafka 相關資訊
-
-於 `$PROJECT_HOME/hippo/etc/env.conf`
-
-| name           | description        |
-| :--------------| :------------------|
-| KAFKA_PRODUCER | producer 路徑      |
-| KAFKA_HOST     | kafka 的 host      |
-| HEALTH_TOPIC   | 傳送監控資訊的 topic |
-
-```shell
-SERVICE_LIST=""
-
-KAFKA_PRODUCER=/Users/square_huang/Documents/Software/kafka_2.10-0.9.0.0/bin/kafka-console-producer.sh
-KAFKA_HOST=localhost:9092
-HEALTH_TOPIC=service-health
-```
-
 ### 安裝 hippo plugin 到專案
 
 執行 `build-tool/build.sh` 
@@ -63,6 +45,21 @@ HEALTH_TOPIC=service-health
 ```
 
 查看 project path 目錄下會多一個 `hippo` 的資料夾
+
+### 填寫 Kafka 相關資訊
+
+於 `$PROJECT_HOME/hippo/etc/monitor.conf`
+
+| name           | description        |
+| :--------------| :------------------|
+| KAFKA_HOST     | kafka 的 host      |
+| HEALTH_TOPIC   | 傳送監控資訊的 topic |
+
+```shell
+[kafka]
+KAFKA_HOST=localhost:9092
+HEALTH_TOPIC=service-health
+```
 
 ### 新增一個 service
 
@@ -90,7 +87,7 @@ EXECUTE_CMD="sh ${PROJECT_HOME}/sbin/mock_training.sh"
 #### Usage
 
 ```shell
-plugin/build-tool/build.sh [OPTIONS] PROJECT_PATH
+./build-tool/build.sh [OPTIONS] PROJECT_PATH
 ```
 
 #### Options
@@ -104,8 +101,6 @@ plugin/build-tool/build.sh [OPTIONS] PROJECT_PATH
 | -l    | --list-services           | 列出 Project 內的 Service        |        |FALSE   |
 |       |--check-service=SERVICE    | 確認 Project 內是否有該 Service   |        |FALSE   |
 |       |--cmd=\"CMD\"              | 啟動 Service 時帶入的指令(執行 py、jar、shell)，可以使用  "{PROJECT_HOME}" 變數 |  | FALSE |
-|       | --build-account           | 遠端 server 的帳號           | HippoPlugin owner | FALSE |
-|       | --build-server            | 遠端 server 的 host or ip   | HippoPlugin server | FALSE   |
 
 > `--cmd` 需與 `--create-service` 一起使用
 
@@ -114,22 +109,18 @@ plugin/build-tool/build.sh [OPTIONS] PROJECT_PATH
 安裝 hippo plugin 到 `recommender_system` 專案
 
 ```shell=
-./plugin/build-tool/build.sh --install --build-server 88.8.146.34 ~/recommender_system  
-
-or
-
-./plugin/build-tool/build.sh -i --build-server 88.8.146.34 ~/recommender_system
+./build-tool/build.sh --install ~/recommender_system  
 
 ```
 
 移除 `recommender_system` 專案的 hippo plugin
 
 ```shell=
-./plugin/build-tool/build.sh --uninstall ~/recommender_system
+./build-tool/build.sh --uninstall ~/recommender_system
 
 or
 
-./plugin/build-tool/build.sh -u ~/recommender_system
+./build-tool/build.sh -u ~/recommender_system
 
 ```
 
@@ -137,19 +128,19 @@ or
 新增一個 SERVICE `recommender-evaluation` 的 Service
 
 ```shell=
-./plugin/build-tool/build.sh --build-server localhost --create-service recommender-evaluation ~/recommender_system
+./build-tool/build.sh --create-service recommender-evaluation ~/recommender_system
 ```
 
 新增一個 SERVICE `recommender-training` 的 Service，並設定啟動時帶入的 command
 
 ```shell=
-./plugin/build-tool/build.sh --build-server localhost --create-service recommender-training --cmd "{PROJECT_HOME}/sbin/mock_training.sh" ~/recommender_system
+./build-tool/build.sh --create-service recommender-training --cmd "{PROJECT_HOME}/sbin/mock_training.sh" ~/recommender_system
 ```
 
 查詢 Project 內的 Service
 
 ```shell=
-./plugin/build-tool/build.sh --list-services --build-server localhost ~/recommender_system
+./build-tool/build.sh --list-services ~/recommender_system
 ```
 
 Output
@@ -165,7 +156,7 @@ recommender_system                       recommender-training
 刪除一個 SERVICE `recommender-evaluation` 的 Service
 
 ```shell=
-./plugin/build-tool/build.sh --build-server --delete-service recommender-evaluation ~/recommender_system
+./build-tool/build.sh --build-server --delete-service recommender-evaluation ~/recommender_system
 ```
 
 ## HOW TO USE Service Plugin

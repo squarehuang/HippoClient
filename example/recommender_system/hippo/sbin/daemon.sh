@@ -106,6 +106,8 @@ stop() {
     fi
      # 檢查該進程是否存在
     if kill -0 $TARGET_ID > /dev/null 2>&1; then
+      # Killing all descendent processes
+      pkill -9 -P $TARGET_ID
       kill -9 "$TARGET_ID" && rm -f "$pid"
       echo "Stopping $service_type successfully , whose pid is $TARGET_ID"
     else
@@ -135,11 +137,12 @@ status() {
       exit 1
     fi
      # 檢查pid對應的進程是否還存在
-    if [ -z "`ps aux | grep $TARGET_ID | grep -v grep`" ]; then
+     
+    if kill -0 $TARGET_ID > /dev/null 2>&1; then
+      echo "$service_type is running : $TARGET_ID "
+    else
       echo "$service_type Process dead but pidfile exist"
       exit 1
-    else
-      echo "$service_type is running : $TARGET_ID "
     fi
   else
     echo "$service_type not running"

@@ -7,7 +7,7 @@ from collections import OrderedDict
 import datetime
 import json
 from base_command import Command
-from client_service.hippo_serving_service import HippoServingService
+from client.hippo_serving_service import HippoServingService
 from entity.column_enum import HippoColumn, CliBeanColumn
 from entity.request_entity import HippoInstanceRequest
 from entity.response_entity import HippoInstance
