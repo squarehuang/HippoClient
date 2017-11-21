@@ -10,9 +10,8 @@ Build Tool 能夠快速地自動化安裝 Hippo Plugin 到各個 Project
 
 | 文件夾        |     說明      |
 | :----------- | :----------- |
-| build.sh     | plugin 與 service 的自動化安裝/移除模組                      |
-
-
+| build.sh     | service 的自動化安裝/移除 plugin 模組                      |
+| install.sh   | Hippo Client 的環境部署程式   |
 ## 前置作業
 
 ### 若為 MacOS 需安裝與 linux 一致的 getopt
@@ -22,16 +21,6 @@ brew install gnu-getopt
 echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
 ```
 
-### build-tool 的使用需先設定 server 與 server 之間 ==免密碼登入 SSH server==
-
-e.g.
-
-```
-ssh-keygen -t rsa 或 ssh-keygen -d (dsa) => 產生出 id_rsa, id_rsa.pub
-scp id_rsa.pub server_hostname:~/.ssh/
-ssh server_hostname
-cat .ssh/id_rsa.pub >> .ssh/authorized_keys 即可
-```
 
 ## Installation
 
