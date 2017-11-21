@@ -66,7 +66,7 @@ base = /hippo/v0.2.0
 
 ### 填寫 plugin template 的 Kafka 相關資訊
 
-於 `/plugin-templates/basic/etc/monitor.conf`
+於 `./plugin-templates/basic/etc/monitor.conf`
 
 | name           | description        |
 | :--------------| :------------------|
