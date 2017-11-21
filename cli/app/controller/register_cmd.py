@@ -11,8 +11,8 @@ from base_command import Command
 
 from entity.column_enum import CliBeanColumn
 
-from client_service.hippo_build_service import HippoBuildService
-from client_service.hippo_serving_service import HippoServingService
+from client.hippo_build_service import HippoBuildService
+from client.hippo_serving_service import HippoServingService
 from entity.request_entity import HippoInstanceRequest
 
 

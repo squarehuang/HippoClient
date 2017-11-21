@@ -5,7 +5,7 @@ import time
 import traceback
 from urllib import urlencode, quote
 from collections import OrderedDict
-from http_service import HttpService
+from client_service.http_service import HttpService
 from utils import common_util
 
 from entity.column_enum import HippoColumn

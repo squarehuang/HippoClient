@@ -6,7 +6,7 @@ import json
 import datetime
 
 from base_command import Command
-from client_service.hippo_serving_service import HippoServingService
+from client.hippo_serving_service import HippoServingService
 from entity.column_enum import CliBeanColumn, HippoColumn, HippoNodeColumn
 
 from entity.request_entity import HippoInstanceRequest
