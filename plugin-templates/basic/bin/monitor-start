@@ -125,8 +125,10 @@ function start() {
   service_status_retcode=$?
   
   if [[ $service_status_retcode == 0 ]] ; then
-    service_retout=$service_status_retout
+    service_pid=$(echo $service_status_retout | awk -F":" '{print $2}' | awk 'gsub(/^[[:blank:]]+|[[:blank:]]+$/,"")' )
     service_retcode=0
+    service_retout="$SERVICE_NAME pid : $service_pid"
+
   else
     service_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --start)
     service_retcode=$?
