@@ -4,7 +4,7 @@ from __future__ import print_function
 import os
 import shlex
 import subprocess
-from shell_service import ShellService
+from client_service.shell_service import ShellService
 
 
 class HippoBuildService(ShellService):

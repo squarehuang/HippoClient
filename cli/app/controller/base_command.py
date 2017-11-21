@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import json
 import datetime
-from utils.base_app import BaseApp
+from client_service.base_app import BaseApp
 from entity.column_enum import HippoColumn
 
 
