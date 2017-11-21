@@ -13,11 +13,8 @@ HippoClient 是一個介接 Hippo Manager 與安裝於 service 的 plugin，讓 
 | example      | 示範程式碼，Demo 透過 hippo cli 操作 microservice  |
 
 
-## 前置作業
+## Installation
 
-### python package
-- netifaces
-- click
 
 ### 若為 MacOS 需安裝與 linux 一致的 getopt
 
@@ -26,26 +23,35 @@ brew install gnu-getopt
 echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
 ```
 
-### build-tool 的使用需先設定 server 與 server 之間 ==免密碼登入 SSH server==
+### 安裝 python 環境與環境變數
 
-e.g.
+執行`./build-tool/install.sh`
+
+show parameters:
 
 ```
-ssh-keygen -t rsa 或 ssh-keygen -d (dsa) => 產生出 id_rsa, id_rsa.pub
-scp id_rsa.pub server_hostname:~/.ssh/
-ssh server_hostname
-cat .ssh/id_rsa.pub >> .ssh/authorized_keys 即可
+./build-tool/install.sh -h
 ```
 
-### 填寫 python 環境相關資訊
-於 `./etc/runtime-env-info.sh`
-
-```bash
-export PYTHONPATH=${PYTHONPATH}:${APP_HOME}/cli/app
-
-# Setting the python virtual ENV path
-source /Users/square_huang/ENV/bin/activate
 ```
+[Installation]
+    Usage: install.sh [OPTIONS]
+    OPTIONS:
+       -h|--help                             Show this message
+       -a|--all                              Install all
+       -p|--install-py                       Install Python
+       -c|--install-cli-env                  Install Python Env for cli
+       -t|--install-template-env             Install Python Env for template
+       -v|--export-var                       Set up variable
+```
+
+run `install.sh`:
+
+```
+./build-tool/install.sh -a
+```
+
+
 
 ### 填寫 CLI 相關設定
 
@@ -60,24 +66,20 @@ base = /hippo/v0.2.0
 
 ### 填寫 plugin template 的 Kafka 相關資訊
 
-於 `/plugin-templates/basic/etc/env.conf`
+於 `./plugin-templates/basic/etc/monitor.conf`
 
 | name           | description        |
 | :--------------| :------------------|
-| KAFKA_PRODUCER | producer 路徑      |
 | KAFKA_HOST     | kafka 的 host      |
 | HEALTH_TOPIC   | 傳送監控資訊的 topic |
 
 ```shell
-SERVICE_LIST=""
-
-KAFKA_PRODUCER=/Users/square_huang/Documents/Software/kafka_2.10-0.9.0.0/bin/kafka-console-producer.sh
+[kafka]
 KAFKA_HOST=localhost:9092
 HEALTH_TOPIC=service-health
 ```
 
 ## HOW TO USE CLI
-
 
 ### register
 
@@ -100,7 +102,6 @@ Options:
   --client_ip TEXT         Client server IP, Default: 192.168.0.106
   --api_host TEXT          hippo manager api host, Default: localhost
   --api_port TEXT          hippo manager api port, Default: 8080
-  -u, --user TEXT          register user, Default: UNKNOWN
   -h, --help               Show this message and exit.
 ```
 
@@ -110,13 +111,13 @@ Options:
 註冊一個 recommender-training 的 service
 
 ```bash
-hippo register -p /Users/square_huang/test/recommender_system -s recommender-training -u sq
+hippo register -p /Users/square_huang/test/recommender_system -s recommender-training
 ```
 
 註冊一個 recommender-prediction 的 service，並加入 run command
 
 ```bash
-hippo register -p /Users/square_huang/test/recommender_system -s recommender-prediction -c "sh /Users/square_huang/test/recommender_system/bin/mock_prediction.sh" -u sq
+hippo register -p /Users/square_huang/test/recommender_system -s recommender-prediction -c "sh /Users/square_huang/test/recommender_system/bin/mock_prediction.sh"
 ```
 
 ### remove
@@ -259,72 +260,6 @@ hippo-stop --id 6c58b631148c86d43e3b1c66bdb73d3f -d
 
 ```
 
-
-### restart
-
-#### Usage
-
-```bash
-Usage: hippo restart [OPTIONS]
-```
-
-#### Options
-
-```bash
-Options:
-  --id TEXT               hippo id  [required]
-  -i, --interval INTEGER  sec
-  --api_host TEXT         hippo manager api host, Default: localhost
-  --api_port TEXT         hippo manager api port, Default: 8080
-  -h, --help              Show this message and exit.
-```
-
-#### Example
-
-重新啟動一個正在執行的 service
-```bash
-hippo restart --id 6c58b631148c86d43e3b1c66bdb73d3f
-```
-
-重新啟動一個已註冊的 service ，並設定 監控區間 (interval)
-
-```bash
-hippo restart --id 6c58b631148c86d43e3b1c66bdb73d3f -i 10
-```
-
-
-### stop
-
-#### Usage
-
-```bash
-Usage: hippo stop [OPTIONS]
-```
-
-#### Options
-
-```bash
-Options:
-  --id TEXT        hippo id  [required]
-  --api_host TEXT  hippo manager api host, Default: localhost
-  --api_port TEXT  hippo manager api port, Default: 8080
-  -h, --help       Show this message and exit. 
-```
-
-#### Example
-
-停止一個正在執行的 service
-```bash
-hippo-stop --id 6c58b631148c86d43e3b1c66bdb73d3f 
-```
-
-停止一個正在執行的 service，並刪除該 service 的 plugin
-
-```bash
-hippo-stop --id 6c58b631148c86d43e3b1c66bdb73d3f -d
-
-```
-
 ### status
 
 #### Usage
@@ -352,7 +287,7 @@ Options:
 查看 cluster 內所有的 service 狀態
 ```bash
 hippo status
-hippo status -u sq
+hippo status -u ubuntu
 hippo status --client_ip 192.168.0.106
 
 
@@ -363,4 +298,6 @@ hippo status --client_ip 192.168.0.106
 
 ```bash
 hippo status --id 6c58b631148c86d43e3b1c66bdb73d3f
-```# git-workshop
+```
+
+## 
