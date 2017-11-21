@@ -50,16 +50,16 @@ class RegisterCommand(Command):
 
         exists_key = list()
         with open(auth_file) as f:
-            line = f.readline()
-            exists_key.append(line)
+            for line in f:
+                exists_key.append(line.replace('\n',''))
         if sshkey not in exists_key:
             self.logger.info(
                 "Add hippo manager ({}) ssh key to lcoal".format(api_url))
             self.logger.info(sshkey)
             with open(auth_file, 'a') as f:
-                f.write(sshkey)
-        self.logger.info('Set Authkey Success')
-        print()
+                f.write(sshkey+'\n')
+            self.logger.info('Set Authkey Success')
+            print()
 
     def execute(self, **kwargs):
         inputs = self.verify_args(**kwargs)
