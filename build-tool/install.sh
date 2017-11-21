@@ -62,12 +62,11 @@ function install_template_env()
 
 function export_variable()
 {
-    os=$(uname -s)
     sudo ln -sf ${APP_HOME}/cli/hippo /usr/local/bin/hippo
 }
 function usage ()
 {
-    echo "[build-service]
+    echo "[Installation]
     Usage: `basename $0` [OPTIONS] 
     OPTIONS:
        -h|--help                             Show this message
