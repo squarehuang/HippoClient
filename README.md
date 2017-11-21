@@ -6,7 +6,7 @@ HippoClient 是一個介接 Hippo Manager 與安裝於 service 的 plugin，讓 
 
 | 文件夾        |     說明      |
 | :----------- | :----------- |
-| build-tool   | plugin 與 service 的自動化安裝/移除模組  |
+| build-tool   | service 的自動化安裝/移除 plugin 模組  |
 | cli          | 使用者操作介面                          |
 | etc          | cli 相關設定檔                         |
 | plugin-templates  | build tool 使用到的 template |
