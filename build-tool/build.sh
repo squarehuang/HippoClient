@@ -19,10 +19,9 @@ function usage ()
        -l|--list-services                    List services
        --check-service=SERVICE               Check service existed by SERVICE
        --cmd=\"CMD\"                           Command to run to service (py, jar, sh...) , you can use \"{PROJECT_HOME}\" variable (e.g. $example_path) to build command
-       --build-account                       Build Account
     "
 }
-args=`getopt -o ilhuc:d: --long create-service:,delete-service:,check-service:,cmd:,build-account:,list-services,install,uninstall,check-install,help \
+args=`getopt -o ilhuc:d: --long create-service:,delete-service:,check-service:,cmd:,list-services,install,uninstall,check-install,help \
      -n 'build' -- "$@"`
 
 if [ $? != 0 ] ; then
@@ -94,10 +93,6 @@ while true ; do
         fi
         # CMD=\"$CMD\"
         echo cmd: "$CMD"
-        ;;
-    --build-account)
-        export BUILD_ACCOUNT=$2;
-        shift 2
         ;;
     --)
         shift ;
@@ -192,11 +187,6 @@ function list_services(){
 
   list_services_func
 }
-
-# setting default BUILD_ACCOUNT, BUILD_SERVER
-if [[ -z $BUILD_ACCOUNT ]] ; then
-    BUILD_ACCOUNT=$USER
-fi
 
 # call function
 if [[ -n $IS_CHECK_INSTALL ]]; then
