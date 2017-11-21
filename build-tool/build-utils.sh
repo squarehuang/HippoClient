@@ -171,10 +171,12 @@ function delete_service_func() {
         rm -r ${PROJECT_HOME}/hippo/bin/${service_name}
         rm -r ${PROJECT_HOME}/hippo/etc/${service_name}
 
+        sed_command "s/\"${service_name}/\"/g" "$ENV_PATH"
         sed_command "s/\"${service_name},/\"/g" "$ENV_PATH"
         sed_command "s/,${service_name},/,/g" "$ENV_PATH"
         sed_command "s/,${service_name}\"/\"/g" "$ENV_PATH"
         log_info "[DELETE] Service Name : ${service_name}"
+        
     fi
 }
 function list_services_func() {
