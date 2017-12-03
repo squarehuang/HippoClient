@@ -32,60 +32,43 @@ function usage ()
     e.g. `basename $0` -i 60 "$temp_serivce_name"
     OPTIONS:
        -h|--help                          Show this message
-       -i|--interval <interval>           Monitor interval millisecond,required
-       -r|--restart                       Restart monitor, (default: false)
-       -c|--coordAddress <coordAddress>   Coordinate Address
-       -u|--user <user>                   User
+       -i <interval>                      Monitor interval millisecond,required
+       -r                                 Restart monitor, (default: false)
+       -c <coordAddress>                  Coordinate Address
+       -u <user>                          User
        
     "
 }
 
 
-args=`getopt -o rhi:c:u: --long interval:,restart,coordAddress:,user:,help \
-     -n 'monitor-run' -- "$@"`
+while getopts 'rhi:c:u:' OPTION; do
+  case "$OPTION" in
+    r)
+      IS_RESTART="true"
+      ;;
 
-if [ $? != 0 ] ; then
-  echo "terminating..." >&2 ;
-  exit 1 ;
-fi
-eval set -- "$args"
+    i)
+      INTERVAL="$OPTARG"
+      ;;
 
-while true ; do
-        case "$1" in
-                -r|--restart)
-                     IS_RESTART="true"
-                     shift
-                      ;;
-                -i|--interval)
-                     INTERVAL="$2";
-                     shift 2
-                     ;;
-                -c|--coordAddress)
-                     COORD_ADDRESS="$2";
-                     shift 2
-                     ;;
-                -u|--user)
-                     USERNAME="$2";
-                     shift 2
-                     ;;
-                -h|--help )
-                    usage
-                    exit
-                    ;;
-                --)
-                    shift ;
-                    break
-                    ;;
-                *)
-                    echo "internal error!" ;
-                    exit 1
-                    ;;
-        esac
+    c)
+      COORD_ADDRESS="$OPTARG"
+      ;;
+    u)
+      USERNAME="$OPTARG"
+      ;;
+    h)
+      usage
+      exit
+      ;;
+    ?)
+      usage
+      exit 1
+      ;;
+  esac
 done
-
-for arg do
-   SERVICE_NAME=$arg
-done
+shift "$(($OPTIND -1))"
+SERVICE_NAME=$@
 
 # check for required args
 if [[ -z $SERVICE_NAME ]] ; then

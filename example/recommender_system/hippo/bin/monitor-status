@@ -35,34 +35,22 @@ function usage ()
     "
 }
 
-args=`getopt -o h --long help -n 'monitor-status' -- "$@"`
-
-if [ $? != 0 ] ; then
-  echo "terminating..." >&2 ;
-  exit 1 ;
-fi
-
-eval set -- "$args"
-
-
-while true ; do
-  case "$1" in
-    -h|--help )
+while getopts 'h' OPTION; do
+  case "$OPTION" in
+    h)
       usage
       exit
       ;;
-    --)
-      shift ;
-      break ;;
-    *)
-      echo "internal error!" ;
-      exit 1 ;;
+    ?)
+      usage
+      exit 1
+      ;;
   esac
 done
+shift "$(($OPTIND -1))"
+SERVICE_NAME=$@
 
-for arg do
-   SERVICE_NAME=$arg
-done
+
 
 # check for required args
 if [[ -z $SERVICE_NAME ]] ; then
