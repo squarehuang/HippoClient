@@ -41,7 +41,7 @@ class RemoveCommand(Command):
             is_success, resp = self.hippoServingService.remove_service(
                 request_entity)
             if not is_success:
-                raise Exception(resp.get('message'))
+                raise Exception('message: {}\n reason: {}'.format(resp.get('message'),resp.get('reason')))
             self.output(resp)
 
             # delete service plugin from project
@@ -50,7 +50,7 @@ class RemoveCommand(Command):
         except Exception as e:
             self.logger.error('Remove {} service failed'.format(hippo_id))
             self.logger.error(e.message)
-            self.logger.error(traceback.format_exc())
+            self.logger.debug(traceback.format_exc())
 
     def _execute(self, status_resp):
         # 1. get project_home, service name by hippo http
