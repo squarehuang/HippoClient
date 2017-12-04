@@ -42,7 +42,7 @@ class HttpService(BaseApp, object):
 
     @api_host.setter
     def host(self, api_host):
-        self._logger.debug("Set API host (%s)" % api_host)
+        self._logger.info("Set API host (%s)" % api_host)
         self._api_host = api_host
 
     @property
@@ -64,7 +64,7 @@ class HttpService(BaseApp, object):
 
     def _request(self, api, method='get', headers=None, data=None):
         url = self._resolve_api_url(api)
-        self.logger.debug('connect to {}'.format(url))
+        self.logger.info('connect to {}'.format(url))
 
         if headers == None:
             headers = self.__common_headers.copy()

@@ -46,6 +46,7 @@ class Supervisor(object):
         # kafka
         self.pub_topic = config['kafka']['HEALTH_TOPIC']
         self.kafka_host = config['kafka']['KAFKA_HOST']
+        print('kafka_host: {}'.format(self.kafka_host))
         self.producer = KafkaProducer(bootstrap_servers=self.kafka_host)
         
 
