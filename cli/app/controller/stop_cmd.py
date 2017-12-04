@@ -31,11 +31,11 @@ class StopCommand(Command):
                 request_entity)
 
             if not is_success:
-                raise Exception(resp.get('message'))
+                raise Exception('message: {}\n reason: {}'.format(resp.get('message'),resp.get('reason')))
             output_dict = self.refactor_result(resp)
             self.output(output_dict)
 
         except Exception as e:
             self.logger.error('Stop {} service failed'.format(hippo_id))
             self.logger.error(e.message)
-            self.logger.error(traceback.format_exc())
+            self.logger.debug(traceback.format_exc())
