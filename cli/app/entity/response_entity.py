@@ -91,11 +91,12 @@ class HippoNode(dict):
 
 
 class HippoMsg(dict):
-    def __init__(self, message):
+    def __init__(self, message,reason=None):
         super(HippoMsg, self).__init__({
-            'message': message
+            'message': message,
+            'reason':reason
         })
 
     @classmethod
     def from_dict(cls, dict_obj):
-        return cls(dict_obj['message'])
+        return cls(dict_obj['message'],dict_obj.get('reason'))

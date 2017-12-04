@@ -40,7 +40,7 @@ class RegisterCommand(Command):
         is_success, sshkey_result = self.hippoServingService.get_sshkey()
         sshkey = sshkey_result['key']
         if not is_success:
-            raise Exception(sshkey_result.get('message'))
+            raise Exception('message: {}\n reason: {}'.format(sshkey_result.get('message'),sshkey_result.get('reason')))
         # check authorized_keys exists
         auth_file = os.path.expanduser('~/.ssh/authorized_keys')
         if not os.path.exists(auth_file):
@@ -109,11 +109,11 @@ class RegisterCommand(Command):
                 register_request)
 
             if not is_success:
-                raise Exception(resp.get('message'))
+                raise Exception('message: {}\n reason: {}'.format(resp.get('message'),resp.get('reason')))
             self.output(resp)
 
         except Exception as e:
             self.logger.error(
                 'Register {} service failed'.format(service_name))
             self.logger.error(e.message)
-            self.logger.error(traceback.format_exc())
+            self.logger.debug(traceback.format_exc())
