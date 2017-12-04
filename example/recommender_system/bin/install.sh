@@ -29,7 +29,7 @@ function install_py()
 
 function install_virtualenv()
 {
-    py_venv=$1
+    py_venv=${APP_HOME}/hippo/venv
     echo "[info] mkdir $py_venv"
     mkdir -p $py_venv
     echo "[info] install virtualenv"
@@ -42,47 +42,17 @@ function install_virtualenv()
     $py_venv/bin/pip install -r $requirments_file
 }
 
-function install_cli_env()
-{   
-    
-    install_py
-    . "${APP_HOME}/etc/env.conf"
-    install_virtualenv $PY_VENV
-}
-
-function install_template_env()
-{   
-    install_py
-    # install python env to plugin-templates/basic
-    template_pyvenv="${APP_HOME}"/plugin-templates/basic/venv
-    requirments_file="${APP_HOME}"/plugin-templates/basic/etc/requirements.txt
-    install_virtualenv $template_pyvenv
-    # copy lib folder to plugin-templates
-    echo "[info] copy lib folder ${APP_HOME}/lib/* to ${APP_HOME}/plugin-templates/basic/lib"
-    rsync -az "${APP_HOME}"/lib/* "${APP_HOME}"/plugin-templates/basic/lib
-}
-
-function export_variable()
-{
-    sudo ln -sf ${APP_HOME}/cli/hippo /usr/local/bin/hippo
-}
 function usage ()
 {
     echo "[Installation]
     Usage: `basename $0` [OPTIONS] 
     OPTIONS:
        -h|--help                             Show this message
-       -a|--all                              Install all
-       -p|--install-py                       Install Python
-       -c|--install-cli-env                  Install Python Env for cli
-       -t|--install-template-env             Install Python Env for template
-       -v|--export-var                       Set up variable
-       
-       
+       -p|--install-py-env                   Install Python and Env
     "
 }
 
-args=`getopt -o havepct --long export-var,all,install-py,install-cli-env,install-template-env,help \
+args=`getopt -o hp --long install-py-env,help \
      -n 'build' -- "$@"`
 
 if [ $? != 0 ] ; then
@@ -95,28 +65,10 @@ eval set -- "$args"
 
 while true ; do
   case "$1" in
-    -a|--all)
+    -p|--install-py-env)
          shift
          install_py
-         install_cli_env
-         install_template_env
-         export_variable
-         ;;
-    -p|--install-py)
-         shift
-         install_py
-          ;;
-    -c|--install-cli-env)
-         shift
-         install_cli_env
-          ;;
-    -t|--install-template-env)
-         shift
-         install_template_env
-          ;;
-    -v|--export_variable)
-         shift
-         export_variable
+         install_virtualenv
           ;;
     -h|--help )
         usage
