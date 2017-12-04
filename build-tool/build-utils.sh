@@ -15,12 +15,12 @@ function log_error (){
 }
 
 
-os=$(uname -s)
-if [ $os == "Linux" ]; then
-    sed_command="sed -i"
-elif [ $os == "Darwin" ]; then
-    sed_command="sed -i '' "
-fi
+# os=$(uname -s)
+# if [ $os == "Linux" ]; then
+#     sed_command="sed -i"
+# elif [ $os == "Darwin" ]; then
+#     sed_command="sed -i ''"
+# fi
 
 function sed_command (){
     # sed command is different in Linux and MacOS, so we need this function
@@ -114,29 +114,24 @@ function create_service_func (){
     if [[ $is_bin_exists -eq 0 ]] ; then
         rm -r ${PROJECT_HOME}/hippo/bin/${service_name}
     fi
-
     [[ -d "${PROJECT_HOME}/hippo/etc/${service_name}" ]] ; is_etc_exists=$?
     if [[ $is_etc_exists -eq 0 ]] ; then
         rm -r ${PROJECT_HOME}/hippo/etc/${service_name}
     fi
-
     # get SERVICE_LIST values from env.conf
-    if [ -z ${SERVICE_LIST} ]; then
+    if [[ -z ${SERVICE_LIST} ]] ; then
       service_value="$service_name"
     else
       service_value="${SERVICE_LIST},${service_name}"
     fi
-
-    # substitute service value
-    grep -q "^SERVICE_LIST" "$ENV_PATH" && $sed_command "s/^SERVICE_LIST.*/SERVICE_LIST=\\\"${service_value}\\\"/" "$ENV_PATH" || echo "SERVICE_LIST=\\\"${service_value}\\\"" >> $ENV_PATH
-
+    grep -q "^SERVICE_LIST" "$ENV_PATH" && sed_command "s/^SERVICE_LIST.*/SERVICE_LIST=\\\"${service_value}\\\"/" "$ENV_PATH" || echo "SERVICE_LIST=\\\"${service_value}\\\"" >> $ENV_PATH
     # generate service folder and run shell
     # folder path and filename pattern  : hippo/bin/${service_name}/run-${service_name}.conf
     mkdir -p "${PROJECT_HOME}/hippo/bin/${service_name}"
     log_info "[BUILD] create folder : $BUILD_SERVER:${PROJECT_HOME}/hippo/bin/${service_name}"
     rsync -az "${template_path}/bin/service/run-template.sh" ${PROJECT_HOME}/hippo/bin/${service_name}/run-${service_name}.sh
     # add service name into run script
-    $sed_command "s/^SERVICE_NAME=.*/SERVICE_NAME=\\\"${service_name}\\\"/" "${PROJECT_HOME}/hippo/bin/${service_name}/run-${service_name}.sh"
+    sed_command "s/^SERVICE_NAME=.*/SERVICE_NAME=\\\"${service_name}\\\"/" "${PROJECT_HOME}/hippo/bin/${service_name}/run-${service_name}.sh"
     chmod 755 "${PROJECT_HOME}/hippo/bin/${service_name}/run-${service_name}.sh"
 
     # generate service folder and env file
@@ -149,7 +144,7 @@ function create_service_func (){
 
     if [[ -n $cmd ]] ; then
       log_info "[BUILD] add EXECUTE_CMD=\"${cmd}\" to ${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
-      $sed_command "/^EXECUTE_CMD/d" "${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
+      sed_command "/^EXECUTE_CMD/d" "${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
       # '' avoid ${PROJECT_HOME} convert to real value, \\\" for print EXECUTE_CMD=""
       echo "EXECUTE_CMD=\"${cmd}\"" >> "${PROJECT_HOME}/hippo/etc/${service_name}/${service_name}-env.conf"
     fi
@@ -176,10 +171,12 @@ function delete_service_func() {
         rm -r ${PROJECT_HOME}/hippo/bin/${service_name}
         rm -r ${PROJECT_HOME}/hippo/etc/${service_name}
 
-        $sed_command "s/\"${service_name},/\"/g" "$ENV_PATH"
-        $sed_command "s/,${service_name},/,/g" "$ENV_PATH"
-        $sed_command "s/,${service_name}\"/\"/g" "$ENV_PATH"
+        sed_command "s/\"${service_name}/\"/g" "$ENV_PATH"
+        sed_command "s/\"${service_name},/\"/g" "$ENV_PATH"
+        sed_command "s/,${service_name},/,/g" "$ENV_PATH"
+        sed_command "s/,${service_name}\"/\"/g" "$ENV_PATH"
         log_info "[DELETE] Service Name : ${service_name}"
+        
     fi
 }
 function list_services_func() {

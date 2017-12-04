@@ -22,8 +22,6 @@ while read assignment; do
       export "$assignment"
     fi
   fi
-
-
 done < ${HIPPO_CONF_DIR}/env.conf
 
 function usage ()
@@ -34,60 +32,43 @@ function usage ()
     e.g. `basename $0` -i 60 "$temp_serivce_name"
     OPTIONS:
        -h|--help                          Show this message
-       -i|--interval <interval>           Monitor interval millisecond,required
-       -r|--restart                       Restart monitor, (default: false)
-       -c|--coordAddress <coordAddress>   Coordinate Address
-       -u|--user <user>                   User
+       -i <interval>                      Monitor interval millisecond,required
+       -r                                 Restart monitor, (default: false)
+       -c <coordAddress>                  Coordinate Address
+       -u <user>                          User
        
     "
 }
 
 
-args=`getopt -o rhi:c:u: --long interval:,restart,coordAddress:,user:,help \
-     -n 'monitor-run' -- "$@"`
+while getopts 'rhi:c:u:' OPTION; do
+  case "$OPTION" in
+    r)
+      IS_RESTART="true"
+      ;;
 
-if [ $? != 0 ] ; then
-  echo "terminating..." >&2 ;
-  exit 1 ;
-fi
-eval set -- "$args"
+    i)
+      INTERVAL="$OPTARG"
+      ;;
 
-while true ; do
-        case "$1" in
-                -r|--restart)
-                     IS_RESTART="true"
-                     shift
-                      ;;
-                -i|--interval)
-                     INTERVAL="$2";
-                     shift 2
-                     ;;
-                -c|--coordAddress)
-                     COORD_ADDRESS="$2";
-                     shift 2
-                     ;;
-                -u|--user)
-                     USERNAME="$2";
-                     shift 2
-                     ;;
-                -h|--help )
-                    usage
-                    exit
-                    ;;
-                --)
-                    shift ;
-                    break
-                    ;;
-                *)
-                    echo "internal error!" ;
-                    exit 1
-                    ;;
-        esac
+    c)
+      COORD_ADDRESS="$OPTARG"
+      ;;
+    u)
+      USERNAME="$OPTARG"
+      ;;
+    h)
+      usage
+      exit
+      ;;
+    ?)
+      usage
+      exit 1
+      ;;
+  esac
 done
-
-for arg do
-   SERVICE_NAME=$arg
-done
+shift "$(($OPTIND -1))"
+SERVICE_NAME=$@
 
 # check for required args
 if [[ -z $SERVICE_NAME ]] ; then
@@ -104,8 +85,8 @@ if [[ -z $INTERVAL ]] ; then
   usage
   exit 1
 fi
-INTERVAL_OPT="-i $INTERVAL "
-OPTIONS_STR=$INTERVAL_OPT
+STATIC_OPT="-i $INTERVAL -p $PROJECT_HOME --config ${HIPPO_CONF_DIR}/monitor.conf "
+OPTIONS_STR=$STATIC_OPT
 if [[ -n $COORD_ADDRESS ]] ; then
   COORD_ADDRESS_OPT="-c $COORD_ADDRESS "
   OPTIONS_STR=$OPTIONS_STR$COORD_ADDRESS_OPT
@@ -121,9 +102,22 @@ if [[ -z $IS_RESTART ]] ; then
 fi
 
 function start() {
-  service_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --start)
-  service_retcode=$?
-  cmd="bash ${HIPPO_SBIN_DIR}/monitor.sh $OPTIONS_STR $SERVICE_NAME "
+  # check service status
+  service_status_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --status)
+  
+  service_status_retcode=$?
+  
+  if [[ $service_status_retcode == 0 ]] ; then
+    service_pid=$(echo $service_status_retout | awk -F":" '{print $2}' | awk 'gsub(/^[[:blank:]]+|[[:blank:]]+$/,"")' )
+    service_retcode=0
+    service_retout="$SERVICE_NAME pid : $service_pid"
+
+  else
+    service_retout=$(${HIPPO_BIN_DIR}/${SERVICE_NAME}/run-${SERVICE_NAME}.sh --start)
+    service_retcode=$?
+  fi
+  # start monitor
+  cmd="python ${HIPPO_DIR}/app/monitor.py $OPTIONS_STR $SERVICE_NAME "
   monitor_retout=$(${HIPPO_SBIN_DIR}/daemon.sh $MONITOR start 1 $cmd)
   monitor_retcode=$?
   if [[ $monitor_retcode == 0 && $service_retcode == 0 ]]; then

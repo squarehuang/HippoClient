@@ -11,8 +11,8 @@ from base_command import Command
 
 from entity.column_enum import CliBeanColumn
 
-from client_service.hippo_build_service import HippoBuildService
-from client_service.hippo_serving_service import HippoServingService
+from client.hippo_build_service import HippoBuildService
+from client.hippo_serving_service import HippoServingService
 from entity.request_entity import HippoInstanceRequest
 
 
@@ -40,7 +40,7 @@ class RegisterCommand(Command):
         is_success, sshkey_result = self.hippoServingService.get_sshkey()
         sshkey = sshkey_result['key']
         if not is_success:
-            raise Exception(sshkey_result.get('message'))
+            raise Exception('message: {}\n reason: {}'.format(sshkey_result.get('message'),sshkey_result.get('reason')))
         # check authorized_keys exists
         auth_file = os.path.expanduser('~/.ssh/authorized_keys')
         if not os.path.exists(auth_file):
@@ -50,16 +50,16 @@ class RegisterCommand(Command):
 
         exists_key = list()
         with open(auth_file) as f:
-            line = f.readline()
-            exists_key.append(line)
+            for line in f:
+                exists_key.append(line.replace('\n',''))
         if sshkey not in exists_key:
             self.logger.info(
                 "Add hippo manager ({}) ssh key to lcoal".format(api_url))
             self.logger.info(sshkey)
-            with open(auth_file, 'w+') as f:
-                f.write(sshkey)
-        self.logger.info('Set Authkey Success')
-        print()
+            with open(auth_file, 'a') as f:
+                f.write(sshkey+'\n')
+            self.logger.info('Set Authkey Success')
+            print()
 
     def execute(self, **kwargs):
         inputs = self.verify_args(**kwargs)
@@ -72,19 +72,19 @@ class RegisterCommand(Command):
 
         try:
             check_service = self.hippoBuildService.check_service(
-                service_name=service_name, project_home=project_home,  build_account=user)
+                service_name=service_name, project_home=project_home)
 
             # 若 Project 未裝 plugin ，則先進行安裝
             if check_service.status != 0:
                 create_service = self.hippoBuildService.create_service(
-                    service_name=service_name, project_home=project_home,  cmd=run_cmd, build_account=user)
+                    service_name=service_name, project_home=project_home,  cmd=run_cmd)
                 print("Install {0} Hippo Plugin to {1}:{2} ".format(
                     service_name, client_ip, project_home))
                 self.logger.info('==== create service ====')
                 self.logger.info(create_service.stdout)
 
                 double_check_service = self.hippoBuildService.check_service(
-                    service_name=service_name, project_home=project_home, build_account=user)
+                    service_name=service_name, project_home=project_home)
 
                 if double_check_service.status != 0:
                     raise Exception("Service plugin not found : {}".format(
@@ -109,11 +109,11 @@ class RegisterCommand(Command):
                 register_request)
 
             if not is_success:
-                raise Exception(resp.get('message'))
+                raise Exception('message: {}\n reason: {}'.format(resp.get('message'),resp.get('reason')))
             self.output(resp)
 
         except Exception as e:
             self.logger.error(
                 'Register {} service failed'.format(service_name))
             self.logger.error(e.message)
-            self.logger.error(traceback.format_exc())
+            self.logger.debug(traceback.format_exc())

@@ -5,7 +5,7 @@ import json
 import traceback
 
 import requests
-from utils.base_app import BaseApp
+from base_app import BaseApp
 
 
 class HttpService(BaseApp, object):

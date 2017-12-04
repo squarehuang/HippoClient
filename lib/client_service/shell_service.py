@@ -4,18 +4,7 @@ from __future__ import print_function
 import os
 import shlex
 import subprocess
-from utils.base_app import BaseApp
-
-
-class std_output(str):
-
-    @property
-    def lines(self):
-        return self.split("\n")
-
-    @property
-    def qlines(self):
-        return [line.split() for line in self.split("\n")]
+from base_app import BaseApp
 
 
 class ShellService(BaseApp, object):

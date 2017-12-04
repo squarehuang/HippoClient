@@ -5,8 +5,8 @@ import os
 import traceback
 from collections import OrderedDict
 from base_command import Command
-from client_service.hippo_serving_service import HippoServingService
-from client_service.hippo_build_service import HippoBuildService
+from client.hippo_serving_service import HippoServingService
+from client.hippo_build_service import HippoBuildService
 from entity.request_entity import HippoInstanceRequest
 from entity.response_entity import HippoInstance
 from entity.column_enum import HippoColumn, CliBeanColumn
@@ -41,7 +41,7 @@ class RemoveCommand(Command):
             is_success, resp = self.hippoServingService.remove_service(
                 request_entity)
             if not is_success:
-                raise Exception(resp.get('message'))
+                raise Exception('message: {}\n reason: {}'.format(resp.get('message'),resp.get('reason')))
             self.output(resp)
 
             # delete service plugin from project
@@ -50,7 +50,7 @@ class RemoveCommand(Command):
         except Exception as e:
             self.logger.error('Remove {} service failed'.format(hippo_id))
             self.logger.error(e.message)
-            self.logger.error(traceback.format_exc())
+            self.logger.debug(traceback.format_exc())
 
     def _execute(self, status_resp):
         # 1. get project_home, service name by hippo http

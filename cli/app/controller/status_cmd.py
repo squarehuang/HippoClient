@@ -6,7 +6,7 @@ import json
 import datetime
 
 from base_command import Command
-from client_service.hippo_serving_service import HippoServingService
+from client.hippo_serving_service import HippoServingService
 from entity.column_enum import CliBeanColumn, HippoColumn, HippoNodeColumn
 
 from entity.request_entity import HippoInstanceRequest
@@ -32,7 +32,7 @@ class StatusCommand(Command, object):
                 request_entity)
 
             if not is_success:
-                raise Exception(resp.get('message'))
+                raise Exception('message: {}\n reason: {}'.format(resp.get('message'),resp.get('reason')))
             output_dict = self.refactor_result(resp)
             self.output(output_dict)
 
@@ -62,7 +62,7 @@ class StatusCommand(Command, object):
         except Exception as e:
             self.logger.error('Get Node status failed')
             self.logger.error(e.message)
-            self.logger.error(traceback.format_exc())
+            self.logger.debug(traceback.format_exc())
 
     def execute_cluster(self, **kwargs):
         try:
@@ -84,7 +84,7 @@ class StatusCommand(Command, object):
         except Exception as e:
             self.logger.error('Get Node status failed')
             self.logger.error(e.message)
-            self.logger.error(traceback.format_exc())
+            self.logger.debug(traceback.format_exc())
 
     def refactor_cluster_result(self, resp):
         node_list = []
