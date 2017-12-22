@@ -2,7 +2,6 @@
 
 export APP_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 requirments_file="${APP_HOME}"/etc/requirements.txt
-. "${APP_HOME}/etc/env.conf"
 
 
 function install_py()
@@ -67,7 +66,6 @@ while true ; do
   case "$1" in
     -p|--install-py-env)
          shift
-         install_py
          install_virtualenv
           ;;
     -h|--help )

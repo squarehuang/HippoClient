@@ -45,14 +45,12 @@ function install_virtualenv()
 function install_cli_env()
 {   
     
-    install_py
     . "${APP_HOME}/etc/env.conf"
     install_virtualenv $PY_VENV
 }
 
 function install_template_env()
 {   
-    install_py
     # install python env to plugin-templates/basic
     template_pyvenv="${APP_HOME}"/plugin-templates/basic/venv
     requirments_file="${APP_HOME}"/plugin-templates/basic/etc/requirements.txt
@@ -97,7 +95,6 @@ while true ; do
   case "$1" in
     -a|--all)
          shift
-         install_py
          install_cli_env
          install_template_env
          export_variable
