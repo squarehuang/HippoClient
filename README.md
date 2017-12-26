@@ -81,6 +81,15 @@ HEALTH_TOPIC=service-health
 
 ## HOW TO USE CLI
 
+* bashrc 檔設定 HIPPO_HOME 並加入 PATH
+
+```
+vim ~/.bashrc
+
+export HIPPO_HOME=/apps/apps_uat/HippoClient
+export PATH=$PATH:$HIPPO_HOME/cli
+```
+
 ### register
 
 #### Usage
