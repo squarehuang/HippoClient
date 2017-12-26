@@ -40,27 +40,33 @@ class RegisterCommand(Command):
         is_success, sshkey_result = self.hippoServingService.get_sshkey()
         sshkey = sshkey_result['key']
         if not is_success:
-            raise Exception('message: {}\n reason: {}'.format(sshkey_result.get('message'),sshkey_result.get('reason')))
+            raise Exception('message: {}\n reason: {}'.format(
+                sshkey_result.get('message'), sshkey_result.get('reason')))
         # check authorized_keys exists
+
         auth_file = os.path.expanduser('~/.ssh/authorized_keys')
         if not os.path.exists(auth_file):
+            ssh_folder = os.path.expanduser('~/.ssh')
+            if not os.path.exists(ssh_folder):
+                os.makedirs(ssh_folder, 0700)
+                self.logger.info("create {} folder".format(ssh_folder))
             with open(auth_file, 'w'):
                 pass
             self.logger.info("create {}".format(auth_file))
         # change authorized_keys permission
-        permissions = 755
-        mode = int(str(permissions),8)
+        permissions = 600
+        mode = int(str(permissions), 8)
         os.chmod(auth_file, mode)
         exists_key = list()
         with open(auth_file) as f:
             for line in f:
-                exists_key.append(line.replace('\n',''))
+                exists_key.append(line.replace('\n', ''))
         if sshkey not in exists_key:
             self.logger.info(
                 "Add hippo manager ({}) ssh key to lcoal".format(api_url))
             self.logger.info(sshkey)
             with open(auth_file, 'a') as f:
-                f.write(sshkey+'\n')
+                f.write(sshkey + '\n')
             self.logger.info('Set Authkey Success')
             print()
 
@@ -112,7 +118,8 @@ class RegisterCommand(Command):
                 register_request)
 
             if not is_success:
-                raise Exception('message: {}\n reason: {}'.format(resp.get('message'),resp.get('reason')))
+                raise Exception('message: {}\n reason: {}'.format(
+                    resp.get('message'), resp.get('reason')))
             self.output(resp)
 
         except Exception as e:
