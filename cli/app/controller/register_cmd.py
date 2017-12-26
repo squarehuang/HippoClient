@@ -54,7 +54,7 @@ class RegisterCommand(Command):
                 pass
             self.logger.info("create {}".format(auth_file))
         # change authorized_keys permission
-        permissions = 755
+        permissions = 600
         mode = int(str(permissions), 8)
         os.chmod(auth_file, mode)
         exists_key = list()
