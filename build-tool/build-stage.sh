@@ -17,7 +17,7 @@ function usage ()
     "
 }
 
-args=`getopt -o hac --long all,clean,help \
+args=`getopt -o habc --long all,build,clean,help \
      -n 'build-stage' -- "$@"`
 
 if [ $? != 0 ] ; then
@@ -34,7 +34,7 @@ while true ; do
         shift
         ;;
     -b|--build )
-        BUILD="true" 
+        BUILD_OPT="true" 
         shift
         ;;
     -c|--clean )
@@ -76,7 +76,7 @@ function build_py_project ()
     # src
     rsync -az etc/${ENV}/* $BUILD_RUNTIME_DIR/etc
     
-    rsync -az build-tool bin lib src README.md VERSION requirements.txt example plugin-templates $BUILD_RUNTIME_DIR
+    rsync -az build-tool bin lib src README.md VERSION requirements.txt example $BUILD_RUNTIME_DIR
     cd "${APP_HOME}"
 }
 
@@ -95,9 +95,9 @@ if [[ -n $ALL_OPT ]]; then
     build_py_project
 fi
 
-# if [[ -n $BUILD_OPT ]]; then
-#     build
-# fi
+if [[ -n $BUILD_OPT ]]; then
+    build_py_project
+fi
 
 if [[ -n $CLEAN_OPT ]]; then
     clean

@@ -10,7 +10,7 @@ Build Tool 能夠快速地自動化安裝 Hippo Plugin 到各個 Project
 
 | 文件夾        |     說明      |
 | :----------- | :----------- |
-| build.sh     | service 的自動化安裝/移除 plugin 模組                      |
+| plugin-installer.sh     | service 的自動化安裝/移除 plugin 模組                      |
 | install.sh   | Hippo Client 的環境部署程式   |
 ## 前置作業
 
@@ -26,11 +26,11 @@ echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
 
 ### 安裝 hippo plugin 到專案
 
-執行 `build-tool/build.sh` 
+執行 `build-tool/plugin-installer.sh` 
 
 ```shell=
-./build.sh --install $your-project-home
-./build.sh -i $your-project-home
+./plugin-installer.sh --install $your-project-home
+./plugin-installer.sh -i $your-project-home
 ```
 
 查看 project path 目錄下會多一個 `hippo` 的資料夾
@@ -53,7 +53,7 @@ HEALTH_TOPIC=service-health
 ### 新增一個 service
 
 ```shell=
-./build.sh --create-service $SERVICE --cmd "sh {PROJECT_HOME}/sbin/mock_training.sh" $your-project-home
+./plugin-installer.sh --create-service $SERVICE --cmd "sh {PROJECT_HOME}/sbin/mock_training.sh" $your-project-home
 ```
 
 
@@ -76,7 +76,7 @@ EXECUTE_CMD="sh ${PROJECT_HOME}/sbin/mock_training.sh"
 #### Usage
 
 ```shell
-./build-tool/build.sh [OPTIONS] PROJECT_PATH
+./build-tool/plugin-installer.sh [OPTIONS] PROJECT_PATH
 ```
 
 #### Options
@@ -98,18 +98,18 @@ EXECUTE_CMD="sh ${PROJECT_HOME}/sbin/mock_training.sh"
 安裝 hippo plugin 到 `recommender_system` 專案
 
 ```shell=
-./build-tool/build.sh --install ~/recommender_system  
+./build-tool/plugin-installer.sh --install ~/recommender_system  
 
 ```
 
 移除 `recommender_system` 專案的 hippo plugin
 
 ```shell=
-./build-tool/build.sh --uninstall ~/recommender_system
+./build-tool/plugin-installer.sh --uninstall ~/recommender_system
 
 or
 
-./build-tool/build.sh -u ~/recommender_system
+./build-tool/plugin-installer.sh -u ~/recommender_system
 
 ```
 
@@ -117,19 +117,19 @@ or
 新增一個 SERVICE `recommender-evaluation` 的 Service
 
 ```shell=
-./build-tool/build.sh --create-service recommender-evaluation ~/recommender_system
+./build-tool/plugin-installer.sh --create-service recommender-evaluation ~/recommender_system
 ```
 
 新增一個 SERVICE `recommender-training` 的 Service，並設定啟動時帶入的 command
 
 ```shell=
-./build-tool/build.sh --create-service recommender-training --cmd "{PROJECT_HOME}/sbin/mock_training.sh" ~/recommender_system
+./build-tool/plugin-installer.sh --create-service recommender-training --cmd "{PROJECT_HOME}/sbin/mock_training.sh" ~/recommender_system
 ```
 
 查詢 Project 內的 Service
 
 ```shell=
-./build-tool/build.sh --list-services ~/recommender_system
+./build-tool/plugin-installer.sh --list-services ~/recommender_system
 ```
 
 Output
@@ -145,7 +145,7 @@ recommender_system                       recommender-training
 刪除一個 SERVICE `recommender-evaluation` 的 Service
 
 ```shell=
-./build-tool/build.sh --build-server --delete-service recommender-evaluation ~/recommender_system
+./build-tool/plugin-installer.sh --build-server --delete-service recommender-evaluation ~/recommender_system
 ```
 
 ## HOW TO USE Service Plugin
