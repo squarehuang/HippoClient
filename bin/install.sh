@@ -3,7 +3,6 @@
 export APP_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 requirments_file="${APP_HOME}"/requirements.txt
 . "${APP_HOME}/etc/env.conf"
-# . "${APP_HOME}/bin/runtime-env-info.sh"
 
 
 function install_virtualenv()
@@ -33,30 +32,23 @@ function uninstall_cli_env()
 }
 
 
-function install_template_env()
+function install_template()
 {   
-    # install python env to plugin-templates/basic
+    # copy lib folder to plugin-templates
     template_path="${APP_HOME}"/src/plugin/plugin-templates
     template_pyvenv="${template_path}"/basic/venv
-    requirments_file="${template_path}"/basic/requirements.txt
-    install_virtualenv ${template_pyvenv}
-    # copy lib folder to plugin-templates
     template_lib="${template_path}"/basic/lib
     echo "[info] copy lib folder ${APP_HOME}/lib/* to ${template_path}/basic/lib"
     rsync -az "${APP_HOME}"/lib/* ${template_lib}
 }
 
-function uninstall_template_env()
+function uninstall_template()
 {   
-    echo "[info] clean Tempalte Python VirtualEnv, delete ${PY_VENV}"
-    # remove plugin-templates env
+    # remove plugin-templates lib folder
+    echo "[info] Clean template lib, delete ${template_lib}"
     template_path="${APP_HOME}"/src/plugin/plugin-templates
     template_pyvenv="${template_path}"/basic/venv
-    echo "[info] delete ${template_pyvenv}"
-    rm -r ${template_pyvenv}
-    # remove plugin-templates lib folder
     template_lib="${template_path}"/basic/lib
-    echo "[info] delete ${template_lib}"
     rm -r ${template_lib}
 }
 
@@ -73,15 +65,15 @@ function usage ()
     OPTIONS:
        -h|--help                             Show this message
        -a|--all                              Install all
-       -i|--install                          Install Python Env for cli, template
+       -i|--install                          Install Python Env for cli and template
        -c|--install-cli-env                  Install Python Env for cli
-       -t|--install-template-env             Install Python Env for template
-       -u|--uninstall                        Uninstall Python Env for cli, template
+       -t|--install-template-env             Install template
+       -u|--uninstall                        Uninstall Python Env for cli and template
        -v|--export-var                       Set up variable
     "
 }
 
-args=`getopt -o havecuit --long export-var,all,install,install-cli-env,install-template-env,uninstall,help \
+args=`getopt -o havecuit --long export-var,all,install,install-cli-env,install-template,uninstall,help \
      -n 'install.sh' -- "$@"`
 
 if [ $? != 0 ] ; then
@@ -95,26 +87,26 @@ while true ; do
     -a|--all)
          shift
          install_cli_env
-         install_template_env
+         install_template
          export_variable
          ;;
     -i|--install)
          shift
          install_cli_env
-         install_template_env
+         install_template
          ;;
     -c|--install-cli-env)
          shift
          install_cli_env
           ;;
-    -t|--install-template-env)
+    -t|--install-template)
          shift
-         install_template_env
+         install_template
           ;;
     -u|--uninstall)
          shift
          uninstall_cli_env
-         uninstall_template_env
+         uninstall_template
           ;;
     -v|--export_variable)
          shift

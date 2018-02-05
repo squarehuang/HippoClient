@@ -49,6 +49,21 @@ function gen_template_path () {
     fi
 }
 
+function install_virtualenv()
+{
+    py_venv=$1
+    echo "[info] mkdir $py_venv"
+    mkdir -p $py_venv
+    echo "[info] install virtualenv"
+    pip install virtualenv
+    echo "[info] create python2.7 venv"
+    virtualenv -p python2.7 $py_venv
+    echo "[info] install pip2.7 setuptools in venv"
+    $py_venv/bin/pip install --upgrade pip setuptools ${PROXY}
+    echo "[info] install requirments in venv"
+    $py_venv/bin/pip install -r $requirments_file ${PROXY}
+}
+
 function install_plugin_func (){
   service_type=$1
   shift
@@ -68,6 +83,15 @@ function install_plugin_func (){
     log_info " Hippo Plugin successfully installed on $BUILD_SERVER:${PROJECT_HOME}"
   fi
 
+}
+
+function install_plugin_venv()
+{   
+    # install python env to plugin-templates/basic
+    plugin_path="${PROJECT_HOME}"/hippo
+    plugin_pyvenv="${plugin_path}"/venv
+    requirments_file="${plugin_path}"/requirements.txt
+    install_virtualenv ${plugin_pyvenv}
 }
 
 function uninstall_plugin_func (){
