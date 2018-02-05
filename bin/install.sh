@@ -3,8 +3,7 @@
 export APP_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 requirments_file="${APP_HOME}"/requirements.txt
 . "${APP_HOME}/etc/env.conf"
-. "${APP_HOME}/bin/runtime-env-info.sh"
-
+# . "${APP_HOME}/bin/runtime-env-info.sh"
 
 
 function install_virtualenv()
@@ -27,21 +26,44 @@ function install_cli_env()
     install_virtualenv ${PY_VENV}
 }
 
+function uninstall_cli_env()
+{   
+    echo "[info] clean Python VirtualEnv, delete ${PY_VENV}"
+    rm -r ${PY_VENV}
+}
+
+
 function install_template_env()
 {   
     # install python env to plugin-templates/basic
-    template_pyvenv="${APP_HOME}"/plugin-templates/basic/venv
-    requirments_file="${APP_HOME}"/plugin-templates/basic/etc/requirements.txt
-    install_virtualenv $template_pyvenv
+    template_path="${APP_HOME}"/src/plugin/plugin-templates
+    template_pyvenv="${template_path}"/basic/venv
+    requirments_file="${template_path}"/basic/requirements.txt
+    install_virtualenv ${template_pyvenv}
     # copy lib folder to plugin-templates
-    echo "[info] copy lib folder ${APP_HOME}/lib/* to ${APP_HOME}/plugin-templates/basic/lib"
-    rsync -az "${APP_HOME}"/lib/* "${APP_HOME}"/plugin-templates/basic/lib
+    template_lib="${template_path}"/basic/lib
+    echo "[info] copy lib folder ${APP_HOME}/lib/* to ${template_path}/basic/lib"
+    rsync -az "${APP_HOME}"/lib/* ${template_lib}
+}
+
+function uninstall_template_env()
+{   
+    echo "[info] clean Tempalte Python VirtualEnv, delete ${PY_VENV}"
+    # remove plugin-templates env
+    template_path="${APP_HOME}"/src/plugin/plugin-templates
+    template_pyvenv="${template_path}"/basic/venv
+    echo "[info] delete ${template_pyvenv}"
+    rm -r ${template_pyvenv}
+    # remove plugin-templates lib folder
+    template_lib="${template_path}"/basic/lib
+    echo "[info] delete ${template_lib}"
+    rm -r ${template_lib}
 }
 
 function export_variable()
 {
     if [[ ${ENV} == "dev" ]]; then
-        sudo ln -sf ${APP_HOME}/cli/hippo /usr/local/bin/hippo
+        sudo ln -sf ${APP_HOME}/src/cli/hippo /usr/local/bin/hippo
     fi
 }
 function usage ()
@@ -51,24 +73,22 @@ function usage ()
     OPTIONS:
        -h|--help                             Show this message
        -a|--all                              Install all
+       -i|--install                          Install Python Env for cli, template
        -c|--install-cli-env                  Install Python Env for cli
        -t|--install-template-env             Install Python Env for template
+       -u|--uninstall                        Uninstall Python Env for cli, template
        -v|--export-var                       Set up variable
-       
-       
     "
 }
 
-args=`getopt -o havect --long export-var,all,install-cli-env,install-template-env,help \
-     -n 'build' -- "$@"`
+args=`getopt -o havecuit --long export-var,all,install,install-cli-env,install-template-env,uninstall,help \
+     -n 'install.sh' -- "$@"`
 
 if [ $? != 0 ] ; then
   echo "terminating..." >&2 ;
   exit 1 ;
 fi
 eval set -- "$args"
-
-
 
 while true ; do
   case "$1" in
@@ -78,6 +98,11 @@ while true ; do
          install_template_env
          export_variable
          ;;
+    -i|--install)
+         shift
+         install_cli_env
+         install_template_env
+         ;;
     -c|--install-cli-env)
          shift
          install_cli_env
@@ -85,6 +110,11 @@ while true ; do
     -t|--install-template-env)
          shift
          install_template_env
+          ;;
+    -u|--uninstall)
+         shift
+         uninstall_cli_env
+         uninstall_template_env
           ;;
     -v|--export_variable)
          shift
@@ -96,7 +126,6 @@ while true ; do
         ;;
     --)
         shift ;
-        usage
         break
         ;;
     *)

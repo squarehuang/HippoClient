@@ -11,7 +11,7 @@ def gen_path(folder, file):
         generate path from app_home
     '''
     cwd = os.path.dirname(os.path.realpath(__file__))
-    app_home = os.path.sep.join(cwd.split(os.path.sep)[:-3])
+    app_home = os.path.sep.join(cwd.split(os.path.sep)[:-4])
     paths = [app_home, folder]
     path_prefix = os.path.join(*paths)
     path = os.path.join(path_prefix, file)

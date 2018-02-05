@@ -16,8 +16,8 @@ class HippoBuildService(ShellService):
             check SHELL file path
         '''
         cwd = os.path.dirname(os.path.realpath(__file__))
-        app_home = os.path.sep.join(cwd.split(os.path.sep)[:-3])
-        paths = [app_home, 'build-tool']
+        app_home = os.path.sep.join(cwd.split(os.path.sep)[:-4])
+        paths = [app_home, 'src', 'plugin']
         self.path_prefix = os.path.join(*paths)
 
     def _merge_options(self, *args, **kwargs):
@@ -31,21 +31,20 @@ class HippoBuildService(ShellService):
     def install_plugin(self, project_home):
         '''
             Install plugin to Project
-            Usage : build.sh --install $project_home
+            Usage : plugin-installer.sh --install $project_home
         '''
         assert project_home
-        path = os.path.join(self.path_prefix, 'build.sh')
+        path = os.path.join(self.path_prefix, 'plugin-installer.sh')
 
-        
         return self.run(
             'sh {0} --install {1}'.format(path, project_home))
 
     def uninstall_plugin(self, instance_id=None, client_ip=None, service_name=None, project_home=None, delete=False, force=False):
         '''
             Uninstall plugin to Project
-            Usage : build.sh --uninstall $project_home
+            Usage : plugin-installer.sh --uninstall $project_home
         '''
-        path = os.path.join(self.path_prefix, 'build.sh')
+        path = os.path.join(self.path_prefix, 'plugin-installer.sh')
         options_bool = []
         if delete:
             options_bool.append('delete')
@@ -53,18 +52,19 @@ class HippoBuildService(ShellService):
             options_bool.append('force')
 
         options_str = self._merge_options(*options_bool,
-                                          instance_id=instance_id, client_ip=client_ip, service_name=service_name, project_home=project_home)
+            instance_id=instance_id, client_ip=client_ip, 
+            service_name=service_name, project_home=project_home)
         return self.run(
             'bash {0} {1} --uninstall'.format(path, options_str))
 
     def create_service(self, service_name, project_home, cmd=None):
         '''
-            Usage : build.sh --create-service=SERVICE $project_home
+            Usage : plugin-installer.sh --create-service=SERVICE $project_home
         '''
         assert service_name
         assert project_home
 
-        path = os.path.join(self.path_prefix, 'build.sh')
+        path = os.path.join(self.path_prefix, 'plugin-installer.sh')
         options_str = self._merge_options(cmd=cmd)
         self.logger.info('options : {}'.format(options_str))
         return self.run(
@@ -73,23 +73,22 @@ class HippoBuildService(ShellService):
 
     def delete_service(self, service_name, project_home):
         '''
-            Usage : build.sh --delete-service=SERVICE $project_home
+            Usage : plugin-installer.sh --delete-service=SERVICE $project_home
         '''
         assert service_name
         assert project_home
 
-        path = os.path.join(self.path_prefix, 'build.sh')
+        path = os.path.join(self.path_prefix, 'plugin-installer.sh')
         
         return self.run(
             'bash {0} --delete-service {1} {2}'.format(path, service_name, project_home))
 
     def check_service(self, service_name, project_home):
         '''
-            Usage : build.sh --check-service=SERVICE $project_home
+            Usage : plugin-installer.sh --check-service=SERVICE $project_home
         '''
         assert service_name
         assert project_home
-
-        path = os.path.join(self.path_prefix, 'build.sh')
+        path = os.path.join(self.path_prefix, 'plugin-installer.sh')
         return self.run(
             'bash {0} --check-service {1} {2}'.format(path, service_name, project_home))
