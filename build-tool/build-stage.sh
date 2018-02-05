@@ -11,13 +11,13 @@ function usage ()
      e.g. `basename $0` -p dev
     OPTIONS:
        -h|--help                             Show this message
-       -a|--all                              Install all
        -b|--build                            Install Python
        -c|--clean                            Clean last build result
+       -r|--rebuild                          Rebuild Project
     "
 }
 
-args=`getopt -o habc --long all,build,clean,help \
+args=`getopt -o hrbc --long build,clean,rebuild,help \
      -n 'build-stage.sh' -- "$@"`
 
 if [ $? != 0 ] ; then
@@ -29,15 +29,16 @@ eval set -- "$args"
 
 while true ; do
   case "$1" in
-    -a|--all)
-        ALL_OPT="true" 
-        shift
-        ;;
     -b|--build )
         BUILD_OPT="true" 
         shift
         ;;
     -c|--clean )
+        CLEAN_OPT="true"
+        shift
+        ;;
+    -r|--rebuild )
+        BUILD_OPT="true" 
         CLEAN_OPT="true"
         shift
         ;;
@@ -74,8 +75,10 @@ function build_py_project ()
     mkdir -p $BUILD_RUNTIME_DIR
     mkdir -p $BUILD_RUNTIME_DIR/etc
     # src
+    echo "[info] copy etc/${ENV} to $BUILD_RUNTIME_DIR/etc"
     rsync -az etc/${ENV}/* $BUILD_RUNTIME_DIR/etc
-    
+
+    echo "[info] copy build-tool bin lib src README.md VERSION requirements.txt example to $BUILD_RUNTIME_DIR"
     rsync -az build-tool bin lib src README.md VERSION requirements.txt example $BUILD_RUNTIME_DIR
     cd "${APP_HOME}"
 }
@@ -83,7 +86,7 @@ function build_py_project ()
 function clean ()
 {
     if [ -d "$APP_HOME/$BUILD_DIR" ]; then
-        echo "[CLEAN]Clean root project $APP_NAME, delete dir $APP_HOME/$BUILD_DIR"
+        echo "[info] clean root project $APP_NAME, delete dir $APP_HOME/$BUILD_DIR"
         rm -rf "$APP_HOME/$BUILD_DIR"
     fi
 }
@@ -91,14 +94,12 @@ function clean ()
 
 
 # call function
-if [[ -n $ALL_OPT ]]; then
-    build_py_project
+
+if [[ -n $CLEAN_OPT ]]; then
+    clean
 fi
 
 if [[ -n $BUILD_OPT ]]; then
     build_py_project
 fi
 
-if [[ -n $CLEAN_OPT ]]; then
-    clean
-fi
