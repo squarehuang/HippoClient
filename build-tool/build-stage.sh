@@ -18,7 +18,7 @@ function usage ()
 }
 
 args=`getopt -o habc --long all,build,clean,help \
-     -n 'build-stage' -- "$@"`
+     -n 'build-stage.sh' -- "$@"`
 
 if [ $? != 0 ] ; then
   echo "terminating..." >&2 ;
@@ -61,7 +61,7 @@ for arg do
 done
 
 # check for required args
-if [[ -z ${ENV} ]] || [[ ! -d ${APP_HOME}/etc/${ENV} ]] ; then
+if [[ -z ${ENV} ]] || [[ ! -d ${APP_HOME}/etc/${ENV} ]] && [[ -z ${CLEAN_OPT} ]] ; then
   echo "$(basename $0): missing ENV : ${ENV}"
   usage
   exit 1
