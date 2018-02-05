@@ -45,7 +45,7 @@ function stat_permission (){
 function gen_template_path () {
     service_type=$1
     if [[ $service_type == "basic" ]]; then
-        export template_path=${APP_HOME}/plugin-templates/basic
+        export template_path=${APP_HOME}/src/plugin/plugin-templates/basic
     fi
 }
 

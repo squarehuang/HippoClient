@@ -1,12 +1,13 @@
 #!/bin/bash
-export APP_HOME="$(cd "`dirname "$0"`"/..; pwd)"
-. "${APP_HOME}"/build-tool/build-utils.sh
+export APP_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
+SRC_DIR="${APP_HOME}/src"
 
+. "${SRC_DIR}"/plugin/plugin-utils.sh
 
-example_path="$(cd "`dirname "$APP_HOME"`"/..; pwd)"/test_project
+example_path="$(cd "`dirname "$APP_HOME"`"/../..; pwd)"/test_project
 function usage ()
 {
-    echo "[build-service]
+    echo "[plugin-installer]
     Usage: `basename $0` [OPTIONS] PROJECT_HOME
     e.g. `basename $0` --install $example_path
     OPTIONS:
@@ -18,11 +19,11 @@ function usage ()
        -d|--delete-service=SERVICE           Delete a service
        -l|--list-services                    List services
        --check-service=SERVICE               Check service existed by SERVICE
-       --cmd=\"CMD\"                           Command to run to service (py, jar, sh...) , you can use \"{PROJECT_HOME}\" variable (e.g. $example_path) to build command
+       --cmd=\"CMD\"                         Command to run to service (py, jar, sh...) , you can use \"{PROJECT_HOME}\" variable (e.g. $example_path) to build command
     "
 }
 args=`getopt -o ilhuc:d: --long create-service:,delete-service:,check-service:,cmd:,list-services,install,uninstall,check-install,help \
-     -n 'build' -- "$@"`
+     -n 'plugin-installer' -- "$@"`
 
 if [ $? != 0 ] ; then
   echo "terminating..." >&2 ;
