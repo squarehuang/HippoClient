@@ -10,8 +10,7 @@ else
     cd "`dirname "$0"`"
 fi
 
-export APP_HOME=`cd .. ; pwd -P`
-
+export APP_HOME=`cd ../.. ; pwd -P`
 
 while read assignment; do
   if [[ $assignment != *"#"* ]] ; then
@@ -22,12 +21,12 @@ while read assignment; do
 done < ${APP_HOME}/etc/env.conf
 
 . "${APP_HOME}/etc/env.conf"
-. "${APP_HOME}/etc/runtime-env-info.sh"
+. "${APP_HOME}/bin/runtime-env-info.sh"
 
 
 nowcmd=`basename $0`
 usage(){
-    for i in ${APP_HOME}/cli/app/*.py; do
+    for i in ${APP_HOME}/src/cli/app/*.py; do
         filename=${i##*/}
         [ ! -L "$i" -a -f "$i"  ] && echo "$nowcmd ${filename%.*}"
     done
@@ -37,7 +36,7 @@ usage(){
 
 COMMAND=$1; shift;
 
-[ ! -f ${APP_HOME}/cli/app/${COMMAND}.py ] && usage
-python ${APP_HOME}/cli/app/${COMMAND}.py "$@"
+[ ! -f ${APP_HOME}/src/cli/app/${COMMAND}.py ] && usage
+python ${APP_HOME}/src/cli/app/${COMMAND}.py "$@"
 
 

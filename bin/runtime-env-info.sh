@@ -14,5 +14,4 @@
 export PYTHONPATH=${PYTHONPATH}:${APP_HOME}/lib
 export PYTHONPATH=${PYTHONPATH}:${APP_HOME}/cli/app
 # Setting the python virtual ENV path
-# source /Users/square_huang/ENV/bin/activate
-source $PY_VENV/bin/activate
+source ${PY_VENV}/bin/activate
