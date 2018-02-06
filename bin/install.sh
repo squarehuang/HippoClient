@@ -40,6 +40,9 @@ function install_template()
     template_lib="${template_path}"/basic/lib
     echo "[info] copy lib folder ${APP_HOME}/lib/* to ${template_path}/basic/lib"
     rsync -az "${APP_HOME}"/lib/* ${template_lib}
+
+    echo "[info] move ${APP_HOME}/etc/monitor.conf to ${template_path}/basic/etc"
+    mv ${APP_HOME}/etc/monitor.conf ${template_path}/basic/etc
 }
 
 function uninstall_template()
@@ -67,7 +70,7 @@ function usage ()
        -a|--all                              Install all
        -i|--install                          Install Python Env for cli and template
        -c|--install-cli-env                  Install Python Env for cli
-       -t|--install-template-env             Install template
+       -t|--install-template                 Install template
        -u|--uninstall                        Uninstall Python Env for cli and template
        -v|--export-var                       Set up variable
     "
