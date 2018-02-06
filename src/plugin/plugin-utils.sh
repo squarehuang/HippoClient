@@ -1,18 +1,18 @@
 #!/bin/bash
-function log_info (){
-    echo "[INFO]$*"
-}
+# function log_info (){
+#     echo "[INFO]$*"
+# }
 
-function log_warn (){
-    echo "[WARN]$*"
-}
+# function log_warn (){
+#     echo "[WARN]$*"
+# }
 
-function log_error (){
-    echo
-    echo "[ERROR]$*"
-    echo
-    exit 1
-}
+# function log_error (){
+#     echo
+#     echo "[ERROR]$*"
+#     echo
+#     exit 1
+# }
 
 
 # os=$(uname -s)
@@ -52,15 +52,15 @@ function gen_template_path () {
 function install_virtualenv()
 {
     py_venv=$1
-    echo "[info] mkdir $py_venv"
+    log_info "mkdir $py_venv"
     mkdir -p $py_venv
-    echo "[info] install virtualenv"
+    log_info "install virtualenv"
     pip install virtualenv
-    echo "[info] create python2.7 venv"
+    log_info "create python2.7 venv"
     virtualenv -p python2.7 $py_venv
-    echo "[info] install pip2.7 setuptools in venv"
+    log_info "install pip2.7 setuptools in venv"
     $py_venv/bin/pip install --upgrade pip setuptools ${PROXY}
-    echo "[info] install requirments in venv"
+    log_info "install requirments in venv"
     $py_venv/bin/pip install -r $requirments_file ${PROXY}
 }
 
@@ -100,7 +100,7 @@ function uninstall_plugin_func (){
     rm -r ${PROJECT_HOME}/hippo
     [[ -d "${PROJECT_HOME}/hippo" ]] ; is_exists2=$?
     if [[ $is_exists2 -ne 0 ]] ; then
-      log_info " Hippo Plugin was successfully uninstalled from $BUILD_SERVER:${PROJECT_HOME}"
+      log_info "Hippo Plugin was successfully uninstalled from $BUILD_SERVER:${PROJECT_HOME}"
     fi
 
   fi
@@ -109,10 +109,10 @@ function uninstall_plugin_func (){
 function check_exists_plugin_func (){
   [[ -d "${PROJECT_HOME}/hippo" ]] ; is_exists=$?
   if [[ $is_exists -ne 0 ]] ; then
-     log_info " Hippo Plugin not exists on $BUILD_SERVER:$PROJECT_HOME"
+     log_warn "Hippo Plugin not exists on $BUILD_SERVER:$PROJECT_HOME"
      return 1
   else
-     log_info " Hippo Plugin already installed on $BUILD_SERVER:$PROJECT_HOME"
+     log_info "Hippo Plugin already installed on $BUILD_SERVER:$PROJECT_HOME"
      return 0
   fi
 }

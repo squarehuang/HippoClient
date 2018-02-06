@@ -4,19 +4,22 @@ export APP_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 requirments_file="${APP_HOME}"/requirements.txt
 . "${APP_HOME}/etc/env.conf"
 
+# include log manipulation script start
+. "${APP_HOME}"/lib/log.sh
+# include log manipulation script end
 
 function install_virtualenv()
 {
     py_venv=$1
-    echo "[info] mkdir $py_venv"
+    log_info "mkdir $py_venv"
     mkdir -p $py_venv
-    echo "[info] install virtualenv"
+    log_info "install virtualenv"
     pip install virtualenv
-    echo "[info] create python2.7 venv"
+    log_info "create python2.7 venv"
     virtualenv -p python2.7 $py_venv
-    echo "[info] install pip2.7 setuptools in venv"
+    log_info "install pip2.7 setuptools in venv"
     $py_venv/bin/pip install --upgrade pip setuptools ${PROXY}
-    echo "[info] install requirments in venv"
+    log_info "install requirments in venv"
     $py_venv/bin/pip install -r $requirments_file ${PROXY}
 }
 
@@ -27,7 +30,7 @@ function install_cli_env()
 
 function uninstall_cli_env()
 {   
-    echo "[info] clean Python VirtualEnv, delete ${PY_VENV}"
+    log_info "clean Python VirtualEnv, delete ${PY_VENV}"
     rm -r ${PY_VENV}
 }
 
@@ -38,17 +41,17 @@ function install_template()
     template_path="${APP_HOME}"/src/plugin/plugin-templates
     template_pyvenv="${template_path}"/basic/venv
     template_lib="${template_path}"/basic/lib
-    echo "[info] copy lib folder ${APP_HOME}/lib/* to ${template_path}/basic/lib"
+    log_info "copy lib folder ${APP_HOME}/lib/* to ${template_path}/basic/lib"
     rsync -az "${APP_HOME}"/lib/* ${template_lib}
 
-    echo "[info] move ${APP_HOME}/etc/monitor.conf to ${template_path}/basic/etc"
+    log_info "move ${APP_HOME}/etc/monitor.conf to ${template_path}/basic/etc"
     mv ${APP_HOME}/etc/monitor.conf ${template_path}/basic/etc
 }
 
 function uninstall_template()
 {   
     # remove plugin-templates lib folder
-    echo "[info] Clean template lib, delete ${template_lib}"
+    log_info "clean template lib, delete ${template_lib}"
     template_path="${APP_HOME}"/src/plugin/plugin-templates
     template_pyvenv="${template_path}"/basic/venv
     template_lib="${template_path}"/basic/lib

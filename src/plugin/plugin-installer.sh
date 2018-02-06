@@ -3,8 +3,14 @@ export APP_HOME="$(cd "`dirname "$0"`"/../..; pwd)"
 SRC_DIR="${APP_HOME}/src"
 CONF_DIR="${APP_HOME}/etc"
 
+
+# include log manipulation script start
+. "${APP_HOME}"/lib/log.sh
+# include log manipulation script end
+
 . "${CONF_DIR}"/env.conf
 . "${SRC_DIR}"/plugin/plugin-utils.sh
+
 
 example_path="$(cd "`dirname "$APP_HOME"`"/../..; pwd)"/test_project
 function usage ()
@@ -144,9 +150,9 @@ function install(){
     if [[ $retval_is_install == 0 ]] ; then
       exit
     fi
-    log_info " Install Plugin on $PROJECT_HOME"
+    log_info "Install Plugin on $PROJECT_HOME"
     install_plugin_func "basic"
-    log_info " Install Python VirtaulEnv for plugin"
+    log_info "Install Python VirtaulEnv for plugin"
     install_plugin_venv
 }
 
