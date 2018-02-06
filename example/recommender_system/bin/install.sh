@@ -1,30 +1,8 @@
 # !/bin/bash
 
 export APP_HOME="$(cd "`dirname "$0"`"/..; pwd)"
-requirments_file="${APP_HOME}"/etc/requirements.txt
+requirments_file="${APP_HOME}"/requirements.txt
 
-
-function install_py()
-{
-    echo "[info] install pip rsync"
-    os=$(uname -s)
-    if [ $os == "Linux" ]; then
-        if [ -f /etc/redhat-release ]; then
-            sudo yum install epel-release
-            sudo yum install python-pip
-            sudo yum -y install rsync
-        fi
-
-        if [ -f /etc/lsb-release ]; then
-            sudo apt-get install python-pip
-            sudo apt-get install python-setuptools
-        fi
-    elif [ $os == "Darwin" ]; then
-        echo ""
-    fi
-    pip install --upgrade pip setuptools wheel
-
-}
 
 function install_virtualenv()
 {

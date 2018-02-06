@@ -1,0 +1,19 @@
+#echo "this script is for runtime environment check "
+
+# TODO
+# what might be interested:
+# network
+# memory
+# build path
+# dependency
+# whoami
+# service version, like Impala, Hive, HBase....
+# language version, like Python, JDK, R, Scala
+
+
+export PYTHONPATH=${PYTHONPATH}:${APP_HOME}/lib
+export PYTHONPATH=${PYTHONPATH}:${APP_HOME}/cli/app
+# Setting the python virtual ENV path
+if [[ -d ${PY_VENV} ]]; then
+    source ${PY_VENV}/bin/activate
+fi

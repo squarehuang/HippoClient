@@ -1,28 +1,27 @@
-#!/bin/bash
+# !/bin/bash
 export APP_HOME="$(cd "`dirname "$0"`"/..; pwd)"
-. "${APP_HOME}"/build-tool/build-utils.sh
 
+. "${APP_HOME}/etc/build.conf"
 
-example_path="$(cd "`dirname "$APP_HOME"`"/..; pwd)"/test_project
+# include log manipulation script start
+. "${APP_HOME}"/lib/log.sh
+# include log manipulation script end
+
 function usage ()
 {
-    echo "[build-service]
-    Usage: `basename $0` [OPTIONS] PROJECT_HOME
-    e.g. `basename $0` --install $example_path
+    echo "[Installation]
+    Usage: `basename $0` [OPTIONS] ENV (dev|ut|prod)
+     e.g. `basename $0` -p dev
     OPTIONS:
        -h|--help                             Show this message
-       -i|--install                          Install Hippo Plugin to PROJECT_PATH
-       -u|--uninstall                        Uninstall Hippo Plugin from PROJECT_PATH
-       --check-install                       Check Plugin install on PROJECT_PATH
-       -c|--create-service=SERVICE           Create a service
-       -d|--delete-service=SERVICE           Delete a service
-       -l|--list-services                    List services
-       --check-service=SERVICE               Check service existed by SERVICE
-       --cmd=\"CMD\"                           Command to run to service (py, jar, sh...) , you can use \"{PROJECT_HOME}\" variable (e.g. $example_path) to build command
+       -b|--build                            Install Python
+       -c|--clean                            Clean last build result
+       -r|--rebuild                          Rebuild Project
     "
 }
-args=`getopt -o ilhuc:d: --long create-service:,delete-service:,check-service:,cmd:,list-services,install,uninstall,check-install,help \
-     -n 'build' -- "$@"`
+
+args=`getopt -o hrbc --long build,clean,rebuild,help \
+     -n 'build-stage.sh' -- "$@"`
 
 if [ $? != 0 ] ; then
   echo "terminating..." >&2 ;
@@ -31,68 +30,24 @@ fi
 eval set -- "$args"
 
 
-
 while true ; do
   case "$1" in
-    -i|--install)
-         IS_INSTALL="true"
-         shift
-          ;;
-    -u|--uninstall)
-         IS_UNINSTALL="true"
-         shift
-          ;;
-    -l|--list-services)
-         IS_LIST_SERVICES="true"
-         shift
-          ;;
-    -c|--create-service)
-         IS_CREATE_SERVICE="true"
-         SERVICE_NAME="$2";
-         shift 2
-         if [[ -z $SERVICE_NAME ]] ; then
-           echo "$(basename $0): missing SERVICE_NAME"
-           usage
-           exit 1
-         fi
-         ;;
-    -d|--delete-service)
-        IS_DELETE_SERVICE="true"
-        SERVICE_NAME="$2";
-        shift 2
-        if [[ -z $SERVICE_NAME ]] ; then
-          echo "$(basename $0): missing SERVICE_NAME"
-          usage
-          exit 1
-        fi
+    -b|--build )
+        BUILD_OPT="true" 
+        shift
+        ;;
+    -c|--clean )
+        CLEAN_OPT="true"
+        shift
+        ;;
+    -r|--rebuild )
+        BUILD_OPT="true" 
+        CLEAN_OPT="true"
+        shift
         ;;
     -h|--help )
         usage
         exit
-        ;;
-    --check-install )
-        IS_CHECK_INSTALL="true"
-        shift
-        ;;
-    --check-service )
-        IS_CHECK_SERVICE="true"
-        SERVICE_NAME="$2";
-        shift 2
-        if [[ -z $SERVICE_NAME ]] ; then
-          echo "$(basename $0): missing SERVICE_NAME"
-          usage
-          exit 1
-        fi
-        ;;
-    --cmd)
-        CMD=$2;
-        shift 2
-        if [[ $CMD =~ '{PROJECT_HOME}' ]] ; then
-          # echo cmd: "$CMD"
-          CMD=`echo $CMD | sed 's/{PROJECT_HOME}/\${PROJECT_HOME}/g'`
-        fi
-        # CMD=\"$CMD\"
-        echo cmd: "$CMD"
         ;;
     --)
         shift ;
@@ -105,118 +60,49 @@ while true ; do
   esac
 done
 
-
 for arg do
-    PROJECT_HOME=$arg
+    ENV=$arg
 done
 
 # check for required args
-if [[ -z $PROJECT_HOME ]] ; then
-  echo "$(basename $0): missing PROJECT_HOME"
+if [[ -z ${ENV} ]] || [[ ! -d ${APP_HOME}/etc/${ENV} ]] && [[ -z ${CLEAN_OPT} ]] ; then
+  echo "$(basename $0): missing ENV : ${ENV}"
   usage
   exit 1
 fi
-export PROJECT_NAME="$(basename ${PROJECT_HOME})"
 
-function check_installed(){
-    check_exists_plugin_func
-    RETVAL=$?
-    return "$RETVAL"
+function build_py_project ()
+{
+    cd "${APP_HOME}"
+    log_info "mkdir $BUILD_RUNTIME_DIR"
+    mkdir -p $BUILD_RUNTIME_DIR
+    mkdir -p $BUILD_RUNTIME_DIR/etc
+    # src
+    log_info "copy etc/${ENV} to $BUILD_RUNTIME_DIR/etc"
+    rsync -az etc/${ENV}/* $BUILD_RUNTIME_DIR/etc
+
+    log_info "copy bin lib src README.md VERSION requirements.txt example to $BUILD_RUNTIME_DIR"
+    rsync -az bin lib src README.md VERSION requirements.txt example $BUILD_RUNTIME_DIR
+    cd "${APP_HOME}"
 }
 
-function check_service(){
-   check_installed
-   retval_is_install=$?
-    if [[ $retval_is_install == 1 ]] ; then
-      RETVAL=1
-      exit "$RETVAL"
-    fi
-
-  check_service_func $SERVICE_NAME
-}
-
-function install(){
-    check_installed
-    retval_is_install=$?
-    if [[ $retval_is_install == 0 ]] ; then
-      exit
-    fi
-    log_info " Install Plugin on $PROJECT_HOME"
-    install_plugin_func "basic"
-}
-
-function uninstall(){
-    check_installed
-    retval_is_install=$?
-    if [[ $retval_is_install == 0 ]] ; then
-      log_info " Uninstall Plugin on $PROJECT_HOME"
-      uninstall_plugin_func
-    fi
-
-
-}
-
-function create_service(){
-    check_installed
-    retval_is_install=$?
-    if [[ $retval_is_install == 1 ]] ; then
-      install
-    fi
-
-    if [[ -n $CMD ]] ; then
-      create_service_func "basic" $SERVICE_NAME "$CMD"
-    else
-      create_service_func "basic" $SERVICE_NAME
+function clean ()
+{
+    if [ -d "$APP_HOME/$BUILD_DIR" ]; then
+        log_info "clean root project $APP_NAME, delete dir $APP_HOME/$BUILD_DIR"
+        rm -rf "$APP_HOME/$BUILD_DIR"
     fi
 }
-function delete_service(){
-  check_installed
-  retval_is_install=$?
-  if [[ $retval_is_install == 1 ]] ; then
-    install
-  fi
-  delete_service_func $SERVICE_NAME
-}
-function list_services(){
-  check_installed
-  retval_is_install=$?
-  if [[ $retval_is_install == 1 ]] ; then
-    RETVAL=1
-    exit "$RETVAL"
-  fi
 
-  list_services_func
-}
+
 
 # call function
-if [[ -n $IS_CHECK_INSTALL ]]; then
-  check_installed
-  exit $RETVAL
+
+if [[ -n $CLEAN_OPT ]]; then
+    clean
 fi
 
-if [[ -n $IS_CHECK_SERVICE ]]; then
-  check_service
-  exit $RETVAL
+if [[ -n $BUILD_OPT ]]; then
+    build_py_project
 fi
 
-
-if [[ -n $IS_LIST_SERVICES ]]; then
-  list_services
-fi
-
-if [[ -n $IS_INSTALL ]]; then
-  install
-fi
-
-if [[ -n $IS_UNINSTALL ]]; then
-  uninstall
-  exit $RETVAL
-fi
-
-if [[ -n $IS_CREATE_SERVICE ]]; then
-  create_service
-fi
-
-if [[ -n $IS_DELETE_SERVICE ]]; then
-  delete_service
-fi
