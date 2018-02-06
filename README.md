@@ -22,40 +22,9 @@ HippoClient 是一個介接 Hippo Manager 與安裝於 service 的 plugin，讓 
 brew install gnu-getopt
 echo 'export PATH="/usr/local/opt/gnu-getopt/bin:$PATH"' >> ~/.bash_profile
 ```
-
-### 安裝 python 環境與環境變數
-
-執行`./build-tool/install.sh`
-
-show parameters:
-
-```
-./build-tool/install.sh -h
-```
-
-```
-[Installation]
-    Usage: install.sh [OPTIONS]
-    OPTIONS:
-       -h|--help                             Show this message
-       -a|--all                              Install all
-       -p|--install-py                       Install Python
-       -c|--install-cli-env                  Install Python Env for cli
-       -t|--install-template-env             Install Python Env for template
-       -v|--export-var                       Set up variable
-```
-
-run `install.sh`:
-
-```
-./build-tool/install.sh -a
-```
-
-
-
 ### 填寫 CLI 相關設定
 
-於 `./etc/cli-env.conf`
+於相對應的環境設定資料夾 `./etc/$ENV/cli-env.conf`
 
 ```
 [HippoManagerAPI]
@@ -66,7 +35,7 @@ base = /hippo/v0.2.0
 
 ### 填寫 plugin template 的 Kafka 相關資訊
 
-於 `./plugin-templates/basic/etc/monitor.conf`
+於於相對應的環境設定資料夾 `./etc/$ENV/monitor.conf`
 
 | name           | description        |
 | :--------------| :------------------|
@@ -78,6 +47,63 @@ base = /hippo/v0.2.0
 KAFKA_HOST=localhost:9092
 HEALTH_TOPIC=service-health
 ```
+
+## Build HippoClient
+
+執行 `./build-tool/build.sh -b dev`
+
+show parameters:
+
+```
+./build-tool/build.sh -h
+```
+
+```
+[Installation]
+    Usage: build.sh [OPTIONS] ENV (dev|ut|prod)
+     e.g. build.sh -p dev
+    OPTIONS:
+       -h|--help                             Show this message
+       -b|--build                            Install Python
+       -c|--clean                            Clean last build result
+       -r|--rebuild                          Rebuild Project
+```
+
+run `build.sh`:
+
+```
+./build-tool/build.sh -b dev
+```
+
+### 執行 Install script
+
+執行`./build-tool/install.sh`
+
+show parameters:
+
+```
+./bin/install.sh -h
+```
+
+```
+[Installation]
+    Usage: install.sh [OPTIONS]
+    OPTIONS:
+       -h|--help                             Show this message
+       -a|--all                              Install all
+       -i|--install                          Install Python Env for cli and template
+       -c|--install-cli-env                  Install Python Env for cli
+       -t|--install-template                 Install template
+       -u|--uninstall                        Uninstall Python Env for cli and template
+       -v|--export-var                       Set up variable
+```
+
+run `install.sh`:
+
+```
+./bin/install.sh -a
+```
+
 
 ## HOW TO USE CLI
 
