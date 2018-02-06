@@ -79,7 +79,7 @@ function build_py_project ()
     rsync -az etc/${ENV}/* $BUILD_RUNTIME_DIR/etc
 
     echo "[info] copy build-tool bin lib src README.md VERSION requirements.txt example to $BUILD_RUNTIME_DIR"
-    rsync -az build-tool bin lib src README.md VERSION requirements.txt example $BUILD_RUNTIME_DIR
+    rsync -az bin lib src README.md VERSION requirements.txt example $BUILD_RUNTIME_DIR
     cd "${APP_HOME}"
 }
 
